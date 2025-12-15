@@ -2,9 +2,14 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Territory Wars</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Territory Wars - Campaign</title>
+    <link rel="icon" type="image/png" href="https://github.com/TitanBusinessPros/Wynne-Wars/raw/main/Wizard.png">
     <style>
+        * {
+            box-sizing: border-box;
+        }
+        
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             display: flex;
@@ -12,27 +17,44 @@
             align-items: center;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: #fff;
-            padding: 20px;
+            padding: 10px;
             margin: 0;
             min-height: 100vh;
         }
+        
         .container {
             background: rgba(255, 255, 255, 0.95);
             border-radius: 20px;
-            padding: 30px;
+            padding: 20px;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            max-width: 800px;
+            max-width: 1200px;
+            width: 100%;
             color: #333;
         }
+        
+        .logo {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .logo img {
+            max-width: 100%;
+            width: 400px;
+            height: auto;
+        }
+        
         h1 {
             text-align: center;
             color: #667eea;
             margin-top: 0;
+            font-size: clamp(20px, 5vw, 32px);
         }
+        
         .game-setup {
             text-align: center;
             margin-bottom: 20px;
         }
+        
         .game-setup button {
             background: #667eea;
             color: white;
@@ -40,27 +62,57 @@
             padding: 12px 24px;
             border-radius: 8px;
             cursor: pointer;
-            font-size: 16px;
+            font-size: clamp(14px, 3vw, 16px);
             margin: 5px;
             transition: all 0.3s;
         }
+        
         .game-setup button:hover {
             background: #5568d3;
             transform: translateY(-2px);
         }
+        
+        .campaign-selector {
+            background: #334155;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .campaign-selector h3 {
+            color: white;
+            margin-top: 0;
+            font-size: clamp(16px, 4vw, 20px);
+        }
+        
+        .stage-display {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 15px;
+            font-size: clamp(16px, 4vw, 20px);
+        }
+        
         .board {
             display: grid;
-            grid-template-columns: repeat(6, 70px);
-            gap: 8px;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 4px;
             margin: 20px auto;
             justify-content: center;
             position: relative;
+            max-width: 100%;
+            aspect-ratio: 8 / 6;
         }
+        
         .cell {
-            width: 70px;
-            height: 70px;
+            width: 100%;
+            aspect-ratio: 1;
             border: 3px solid #ddd;
-            border-radius: 10px;
+            border-radius: 8px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -69,50 +121,48 @@
             transition: all 0.3s;
             background: white;
             position: relative;
+            min-width: 30px;
         }
+        
         .cell:hover {
             transform: scale(1.05);
             box-shadow: 0 4px 12px rgba(0,0,0,0.2);
         }
+        
         .cell.player1 {
             border-color: #5568d3;
         }
+        
         .cell.player2 {
             border-color: #f5576c;
         }
-        .cell.bonus {
-            background: linear-gradient(135deg, #fbbf24, #f59e0b);
-            border-color: #f59e0b;
-            color: white;
-        }
+        
         .cell.selected {
             border: 3px solid #ffd700;
             box-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
         }
+        
         .cell.valid-move {
             border-color: #4ade80;
             box-shadow: 0 0 10px rgba(74, 222, 128, 0.4);
         }
+        
         .cell.valid-expansion {
             border-color: #60a5fa;
             box-shadow: 0 0 10px rgba(96, 165, 250, 0.4);
         }
+        
         .cell.valid-fortify {
             border-color: #a78bfa;
             box-shadow: 0 0 10px rgba(167, 139, 250, 0.4);
         }
+        
         .army-count {
-            font-size: 28px;
+            font-size: clamp(16px, 3vw, 24px);
             font-weight: bold;
             color: white;
         }
-        .resource {
-            font-size: 11px;
-            opacity: 0.9;
-        }
-        .bonus-icon {
-            font-size: 20px;
-        }
+        
         .status {
             text-align: center;
             margin: 20px 0;
@@ -121,31 +171,41 @@
             border-radius: 10px;
             border-left: 5px solid #667eea;
             font-weight: 500;
+            font-size: clamp(12px, 3vw, 16px);
         }
+        
         .player-info {
             display: flex;
             justify-content: space-around;
             margin: 20px 0;
             gap: 10px;
+            flex-wrap: wrap;
         }
+        
         .player-card {
             flex: 1;
+            min-width: 150px;
             padding: 15px;
             border-radius: 10px;
             text-align: center;
+            font-size: clamp(12px, 2.5vw, 16px);
         }
+        
         .player-card.player1 {
             background: linear-gradient(135deg, #667eea, #5568d3);
             color: white;
         }
+        
         .player-card.player2 {
             background: linear-gradient(135deg, #f093fb, #f5576c);
             color: white;
         }
+        
         .player-card.active {
             box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
             border: 3px solid #ffd700;
         }
+        
         .actions {
             display: flex;
             justify-content: center;
@@ -153,6 +213,7 @@
             margin: 20px 0;
             flex-wrap: wrap;
         }
+        
         .actions button {
             background: #10b981;
             color: white;
@@ -160,18 +221,21 @@
             padding: 10px 20px;
             border-radius: 8px;
             cursor: pointer;
-            font-size: 14px;
+            font-size: clamp(12px, 3vw, 14px);
             transition: all 0.3s;
         }
+        
         .actions button:hover:not(:disabled) {
             background: #059669;
             transform: translateY(-2px);
         }
+        
         .actions button:disabled {
             background: #ccc;
             cursor: not-allowed;
             opacity: 0.6;
         }
+        
         .modal {
             display: none;
             position: fixed;
@@ -183,119 +247,212 @@
             justify-content: center;
             align-items: center;
             z-index: 1000;
+            padding: 20px;
         }
+        
         .modal.show {
             display: flex;
         }
+        
         .modal-content {
             background: white;
             padding: 30px;
             border-radius: 15px;
             text-align: center;
             max-width: 400px;
+            width: 100%;
             box-shadow: 0 10px 40px rgba(0,0,0,0.3);
         }
+        
         .modal-content h2 {
             color: #667eea;
             margin-top: 0;
+            font-size: clamp(18px, 4vw, 24px);
         }
+        
         .army-slider-container {
             margin: 20px 0;
         }
+        
         .army-slider {
             width: 100%;
             margin: 10px 0;
         }
+        
         .slider-value {
-            font-size: 24px;
+            font-size: clamp(20px, 5vw, 24px);
             font-weight: bold;
             color: #667eea;
             margin: 10px 0;
         }
+        
         .modal-buttons {
             display: flex;
             gap: 10px;
             justify-content: center;
             margin-top: 20px;
+            flex-wrap: wrap;
         }
+        
         .modal-buttons button {
             padding: 10px 20px;
             border: none;
             border-radius: 8px;
             cursor: pointer;
-            font-size: 16px;
+            font-size: clamp(14px, 3vw, 16px);
             transition: all 0.3s;
         }
+        
         .modal-buttons .confirm {
             background: #10b981;
             color: white;
         }
+        
         .modal-buttons .confirm:hover {
             background: #059669;
         }
+        
         .modal-buttons .cancel {
             background: #ef4444;
             color: white;
         }
+        
         .modal-buttons .cancel:hover {
             background: #dc2626;
         }
-        .rules {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 10px;
-            margin-top: 20px;
-            font-size: 14px;
-            line-height: 1.6;
+
+        /* Mobile optimizations */
+        @media (max-width: 768px) {
+            body {
+                padding: 5px;
+            }
+            
+            .container {
+                padding: 15px;
+                border-radius: 15px;
+            }
+            
+            .logo img {
+                width: 280px;
+            }
+            
+            .board {
+                gap: 2px;
+            }
+            
+            .cell {
+                border-width: 2px;
+                border-radius: 4px;
+            }
+            
+            .cell:hover {
+                transform: scale(1.02);
+            }
+            
+            .game-setup button {
+                padding: 10px 16px;
+                font-size: 14px;
+            }
+            
+            .player-card {
+                min-width: 120px;
+                padding: 10px;
+            }
+            
+            .modal-content {
+                padding: 20px;
+            }
         }
-        .rules h3 {
-            color: #667eea;
-            margin-top: 0;
+
+        /* Small mobile phones */
+        @media (max-width: 480px) {
+            .logo img {
+                width: 220px;
+            }
+            
+            .board {
+                gap: 1px;
+            }
+            
+            .cell {
+                border-width: 1px;
+            }
+            
+            .game-setup button {
+                padding: 8px 12px;
+                font-size: 12px;
+            }
         }
-        .rules ul {
-            padding-left: 20px;
+
+        /* Tablet landscape and desktop */
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .container {
+                max-width: 900px;
+            }
+            
+            .board {
+                gap: 5px;
+            }
         }
-        .rules li {
-            margin: 8px 0;
+
+        /* Large desktop */
+        @media (min-width: 1025px) {
+            .container {
+                max-width: 1000px;
+            }
+            
+            .board {
+                gap: 6px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>⚔️ Territory Wars ⚔️</h1>
-        
-        <div style="background: linear-gradient(135deg, #fbbf24, #f59e0b); color: white; padding: 12px; border-radius: 10px; text-align: center; font-weight: bold; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(251, 191, 36, 0.3);">
-            ⭐ 3 HIDDEN BONUS SQUARES (+5 armies each) ⭐
+        <div class="logo">
+            <img src="https://github.com/TitanBusinessPros/Wynne-Wars/raw/main/WynneWars-Logo.png" alt="Wynne Wars">
         </div>
-
-        <div style="background: #334155; padding: 15px; border-radius: 10px; margin-bottom: 20px; text-align: center;">
-            <div style="color: white; font-weight: bold; margin-bottom: 10px; font-size: 18px;">SELECT LEVEL</div>
-            <div style="display: flex; gap: 10px; justify-content: center;">
-                <button class="level-btn" id="level1-btn" style="background: #667eea; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: bold; transition: all 0.3s;">
-                    LEVEL 1
+        
+        <div class="campaign-selector">
+            <h3>🎮 SELECT GAME MODE</h3>
+            <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+                <button class="game-setup" onclick="startCampaign()" style="background: #f59e0b; font-size: 18px; padding: 15px 30px;">
+                    ⚔️ 20 STAGE CAMPAIGN
                 </button>
-                <button class="level-btn" id="level2-btn" style="background: #f59e0b; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: bold; transition: all 0.3s;">
-                    LEVEL 2 🕳️
+                <button class="game-setup" onclick="start2Player()" style="background: #10b981; font-size: 18px; padding: 15px 30px;">
+                    👥 2 PLAYER MODE
                 </button>
             </div>
+            <div style="margin-top: 15px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+                <button class="game-setup" onclick="saveGame()" style="background: #3b82f6; font-size: 14px; padding: 10px 20px;">
+                    💾 SAVE GAME
+                </button>
+                <button class="game-setup" onclick="loadGame()" style="background: #8b5cf6; font-size: 14px; padding: 10px 20px;">
+                    📂 LOAD GAME
+                </button>
+            </div>
+            <div id="save-status" style="margin-top: 10px; font-size: 12px; color: white;"></div>
+        </div>
+
+        <div id="stage-info" class="stage-display" style="display: none;">
+            STAGE <span id="current-stage">1</span> / 20
+            <div id="stage-features" style="font-size: 14px; margin-top: 5px;"></div>
         </div>
         
         <div class="game-setup">
-            <button id="pvp-btn">2 Players</button>
-            <button id="ai-btn">Play vs AI</button>
             <button id="reset-btn">New Game</button>
         </div>
 
         <div class="player-info">
             <div class="player-card player1" id="p1-card">
                 <div style="font-size: 20px; font-weight: bold;">Player 1</div>
-                <div>Territories: <span id="p1-territories">2</span></div>
-                <div>Total Armies: <span id="p1-armies">6</span></div>
+                <div>Territories: <span id="p1-territories">0</span></div>
+                <div>Total Armies: <span id="p1-armies">0</span></div>
             </div>
             <div class="player-card player2" id="p2-card">
-                <div style="font-size: 20px; font-weight: bold;">Player 2 <span id="ai-label"></span></div>
-                <div>Territories: <span id="p2-territories">2</span></div>
-                <div>Total Armies: <span id="p2-armies">6</span></div>
+                <div style="font-size: 20px; font-weight: bold;"><span id="p2-label">Player 2</span></div>
+                <div>Territories: <span id="p2-territories">0</span></div>
+                <div>Total Armies: <span id="p2-armies">0</span></div>
             </div>
         </div>
 
@@ -311,34 +468,50 @@
 
         <div class="board" id="board"></div>
 
-        <div class="rules">
-            <h3>📜 How to Play</h3>
-            <ul>
+        <div style="text-align: center; margin-top: 20px;">
+            <button onclick="toggleInstructions()" style="background: #667eea; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: bold;">
+                📜 GAMEPLAY INSTRUCTIONS
+            </button>
+        </div>
+
+        <div id="instructions-panel" style="display: none; background: #f8f9fa; padding: 20px; border-radius: 10px; margin-top: 20px; font-size: 14px; line-height: 1.6;">
+            <h3 style="color: #667eea; margin-top: 0;">📜 How to Play</h3>
+            <ul style="padding-left: 20px;">
                 <li><strong>Goal:</strong> Capture all territories or eliminate all enemy armies!</li>
                 <li><strong>Setup:</strong> Each player starts with 2 swordsmen groups and 1 wizard. <strong>3 hidden bonus squares hold 5 armies each!</strong></li>
                 <li><strong>Units:</strong>
                     <ul>
                         <li><strong>Swordsmen:</strong> Attack adjacent enemies. Higher number wins! (7 vs 5 = 2 remaining)</li>
                         <li><strong>Wizard 🔮:</strong> Always 1 unit. Moves 2 squares per turn. Can attack up to 2 squares away in straight lines. <strong>Kills 2 units per attack!</strong></li>
+                        <li><strong>Archer 🏹 (Stage 5+):</strong> Always 1 unit. Attacks up to 3 squares away in straight lines. <strong>Kills 1 unit per attack!</strong></li>
                     </ul>
                 </li>
                 <li><strong>Your Turn (5 Phases):</strong>
                     <ul>
                         <li><strong>🔮 Wizard Movement:</strong> Move your wizard up to 2 squares (one square at a time to adjacent empty spaces)</li>
-                        <li><strong>1️⃣ Deploy Phase:</strong> Place armies on swordsmen OR expand to adjacent empty squares</li>
+                        <li><strong>1️⃣ Deploy Phase:</strong> Place armies on swordsmen OR expand to adjacent empty squares. <strong>Cannot stack armies on wizards or archers!</strong></li>
                         <li><strong>2️⃣ Expand Phase:</strong> Claim adjacent empty squares with swordsmen</li>
-                        <li><strong>3️⃣ Attack Phase:</strong> Attack enemies! Wizards shoot magic balls! 🔮⚡</li>
+                        <li><strong>3️⃣ Attack Phase:</strong> Attack enemies! Wizards shoot magic balls! 🔮⚡ Archers shoot arrows! 🏹</li>
                         <li><strong>4️⃣ Fortify Phase:</strong> Move swordsmen between adjacent territories</li>
                         <li><strong>Bonus Discovery:</strong> Find hidden bonus squares - you'll get fireworks and +5 armies! 🎆</li>
+                        <li><strong>Trap Doors 🕳️:</strong> In some campaign stages, hidden trap doors will destroy units that step on them!</li>
                         <li>Click "Next Phase" to skip optional phases, "End Turn" to finish</li>
                     </ul>
                 </li>
-                <li><strong>Strategy:</strong> Move your wizard to strategic positions! Use it to snipe enemies from 2 squares away. Protect it - it's fragile!</li>
+                <li><strong>Strategy:</strong> 
+                    <ul>
+                        <li>Move your wizard to strategic positions! Use it to snipe enemies from 2 squares away. Protect it - it's fragile!</li>
+                        <li>Wizards and archers stay at 1 army - you cannot deploy to them!</li>
+                        <li>Use archers for long-range support from safe positions</li>
+                        <li>Build defensive formations to protect your special units</li>
+                    </ul>
+                </li>
+                <li><strong>Campaign Mode:</strong> 20 progressively harder stages. Stage 5+ adds archers. Stage 20 is the final boss with multiple wizards and archers!</li>
+                <li><strong>2 Player Mode:</strong> Take turns on the same device. No AI - pure strategy!</li>
             </ul>
         </div>
     </div>
 
-    <!-- Army Movement Modal -->
     <div id="move-modal" class="modal">
         <div class="modal-content">
             <h2>Move Armies</h2>
@@ -358,114 +531,319 @@
         </div>
     </div>
 
+    <!-- Cutscene Modal -->
+    <div id="cutscene-modal" class="modal">
+        <div class="modal-content" style="max-width: 800px; padding: 0; overflow: hidden;">
+            <video id="cutscene-video" style="width: 100%; height: auto; display: block;" controls autoplay>
+                <source src="https://github.com/TitanBusinessPros/Zombie-Outbreak-Honolulu/raw/main/Ad-2-Zombie.mp4" type="video/mp4">
+            </video>
+            <div style="padding: 20px;">
+                <h2 style="color: #667eea; margin: 0 0 15px 0;">Stage <span id="cutscene-stage"></span></h2>
+                <button onclick="skipCutscene()" style="background: #667eea; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-size: 16px; width: 100%;">
+                    Continue to Battle ⚔️
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script>
-        const BOARD_SIZE = 36;
+        const BOARD_SIZE = 48;
         const game = {
             board: [],
             currentPlayer: 1,
-            gameMode: null,
             selectedCell: null,
             phase: 'setup',
             armiesToDeploy: 0,
-            turnCount: 0,
-            maxTurns: 20,
             gameOver: false,
             pendingMove: null,
             wizardMovesRemaining: 0,
-            currentLevel: 1,
-            trapDoor: null
+            currentStage: 1,
+            isCampaign: false,
+            is2Player: false,
+            campaignConfig: null,
+            archerShots: { player1: 0, player2: 0 },
+            wizardAttacksUsed: { player1: false, player2: false }
         };
 
-        function init() {
+        function generateCampaignConfig() {
+            const config = {
+                dungeonStages: [],
+                bonusPositions: []
+            };
+            
+            // Randomly select 5 stages out of 20 for dungeons
+            const allStages = Array.from({length: 20}, (_, i) => i + 1);
+            for (let i = 0; i < 5; i++) {
+                const randomIndex = Math.floor(Math.random() * allStages.length);
+                config.dungeonStages.push(allStages[randomIndex]);
+                allStages.splice(randomIndex, 1);
+            }
+            
+            // Generate random bonus positions for each stage
+            for (let stage = 1; stage <= 20; stage++) {
+                const positions = [];
+                while (positions.length < 3) {
+                    const pos = Math.floor(Math.random() * BOARD_SIZE);
+                    // Avoid starting positions and existing bonuses
+                    if (pos !== 5 && pos !== 14 && pos !== 2 && pos !== 33 && 
+                        pos !== 42 && pos !== 21 && pos !== 30 && pos !== 45 &&
+                        !positions.includes(pos)) {
+                        positions.push(pos);
+                    }
+                }
+                config.bonusPositions[stage] = positions;
+            }
+            
+            return config;
+        }
+
+        function startCampaign() {
+            game.isCampaign = true;
+            game.is2Player = false;
+            game.currentStage = 1;
+            game.campaignConfig = generateCampaignConfig();
+            initStage();
+            document.getElementById('stage-info').style.display = 'block';
+            updateStageDisplay();
+        }
+
+        function start2Player() {
+            game.isCampaign = false;
+            game.is2Player = true;
+            game.currentStage = 1;
+            game.campaignConfig = null;
+            initStage();
+            document.getElementById('stage-info').style.display = 'none';
+            showStatus('2 Player Mode - Player 1\'s turn!');
+        }
+
+        function saveGame() {
+            try {
+                const saveData = {
+                    board: game.board,
+                    currentPlayer: game.currentPlayer,
+                    phase: game.phase,
+                    armiesToDeploy: game.armiesToDeploy,
+                    gameOver: game.gameOver,
+                    wizardMovesRemaining: game.wizardMovesRemaining,
+                    currentStage: game.currentStage,
+                    isCampaign: game.isCampaign,
+                    is2Player: game.is2Player,
+                    campaignConfig: game.campaignConfig,
+                    saveDate: new Date().toISOString()
+                };
+                
+                localStorage.setItem('territoryWarsGameSave', JSON.stringify(saveData));
+                
+                const saveStatus = document.getElementById('save-status');
+                saveStatus.textContent = '✅ Game saved successfully!';
+                saveStatus.style.color = '#10b981';
+                
+                setTimeout(() => {
+                    saveStatus.textContent = '';
+                }, 3000);
+            } catch (error) {
+                const saveStatus = document.getElementById('save-status');
+                saveStatus.textContent = '❌ Failed to save game';
+                saveStatus.style.color = '#ef4444';
+            }
+        }
+
+        function loadGame() {
+            try {
+                const savedData = localStorage.getItem('territoryWarsGameSave');
+                
+                if (!savedData) {
+                    const saveStatus = document.getElementById('save-status');
+                    saveStatus.textContent = '⚠️ No saved game found';
+                    saveStatus.style.color = '#f59e0b';
+                    setTimeout(() => {
+                        saveStatus.textContent = '';
+                    }, 3000);
+                    return;
+                }
+                
+                const saveData = JSON.parse(savedData);
+                
+                // Restore game state
+                game.board = saveData.board;
+                game.currentPlayer = saveData.currentPlayer;
+                game.phase = saveData.phase;
+                game.armiesToDeploy = saveData.armiesToDeploy;
+                game.gameOver = saveData.gameOver;
+                game.wizardMovesRemaining = saveData.wizardMovesRemaining;
+                game.currentStage = saveData.currentStage;
+                game.isCampaign = saveData.isCampaign;
+                game.is2Player = saveData.is2Player || false;
+                game.campaignConfig = saveData.campaignConfig;
+                game.selectedCell = null;
+                game.pendingMove = null;
+                
+                // Update UI based on game mode
+                if (game.isCampaign) {
+                    document.getElementById('stage-info').style.display = 'block';
+                    updateStageDisplay();
+                } else {
+                    document.getElementById('stage-info').style.display = 'none';
+                }
+                
+                renderBoard();
+                updateUI();
+                
+                const saveDate = new Date(saveData.saveDate).toLocaleString();
+                const saveStatus = document.getElementById('save-status');
+                saveStatus.textContent = `✅ Game loaded! (Saved: ${saveDate})`;
+                saveStatus.style.color = '#10b981';
+                
+                setTimeout(() => {
+                    saveStatus.textContent = '';
+                }, 5000);
+            } catch (error) {
+                const saveStatus = document.getElementById('save-status');
+                saveStatus.textContent = '❌ Failed to load game';
+                saveStatus.style.color = '#ef4444';
+            }
+        }
+
+        function updateStageDisplay() {
+            if (!game.isCampaign) return;
+            
+            document.getElementById('current-stage').textContent = game.currentStage;
+            
+            const features = [];
+            if (game.campaignConfig.dungeonStages.includes(game.currentStage)) {
+                features.push('🕳️ TRAP DOOR ACTIVE');
+            }
+            if (game.currentStage >= 5) {
+                features.push('🏹 ARCHERS DEPLOYED');
+            }
+            if (game.currentStage === 20) {
+                features.push('⚠️ FINAL BOSS STAGE');
+            }
+            
+            document.getElementById('stage-features').innerHTML = features.join(' | ');
+        }
+
+        function initStage() {
             game.board = Array(BOARD_SIZE).fill(null).map(() => ({
                 owner: 0,
                 armies: 0,
                 isBonus: false,
                 isWizard: false,
+                isArcher: false,
                 isTrapDoor: false
             }));
             
-            // Starting positions for swordsmen
-            game.board[5] = { owner: 1, armies: 3, isBonus: false, isWizard: false, isTrapDoor: false };
-            game.board[14] = { owner: 1, armies: 3, isBonus: false, isWizard: false, isTrapDoor: false };
-            game.board[21] = { owner: 2, armies: 3, isBonus: false, isWizard: false, isTrapDoor: false };
-            game.board[30] = { owner: 2, armies: 3, isBonus: false, isWizard: false, isTrapDoor: false };
+            // Player starting positions
+            game.board[5] = { owner: 1, armies: 3, isBonus: false, isWizard: false, isArcher: false, isTrapDoor: false };
+            game.board[14] = { owner: 1, armies: 3, isBonus: false, isWizard: false, isArcher: false, isTrapDoor: false };
+            game.board[2] = { owner: 1, armies: 1, isBonus: false, isWizard: true, isArcher: false, isTrapDoor: false };
             
-            // Wizard positions - one per player, isolated
-            game.board[2] = { owner: 1, armies: 1, isBonus: false, isWizard: true, isTrapDoor: false };
-            game.board[33] = { owner: 2, armies: 1, isBonus: false, isWizard: true, isTrapDoor: false };
+            // AI/Player 2 starting positions
+            game.board[42] = { owner: 2, armies: 3, isBonus: false, isWizard: false, isArcher: false, isTrapDoor: false };
+            game.board[33] = { owner: 2, armies: 3, isBonus: false, isWizard: false, isArcher: false, isTrapDoor: false };
+            game.board[45] = { owner: 2, armies: 1, isBonus: false, isWizard: true, isArcher: false, isTrapDoor: false };
             
-            // Bonus squares with 5 armies
-            const bonusPositions = [10, 17, 25];
+            // Stage 5+: Add archers (only in campaign mode)
+            if (game.isCampaign && game.currentStage >= 5) {
+                // Player archers
+                game.board[8] = { owner: 1, armies: 1, isBonus: false, isWizard: false, isArcher: true, isTrapDoor: false };
+                game.board[11] = { owner: 1, armies: 1, isBonus: false, isWizard: false, isArcher: true, isTrapDoor: false };
+                game.board[17] = { owner: 1, armies: 1, isBonus: false, isWizard: false, isArcher: true, isTrapDoor: false };
+                
+                // AI archers
+                game.board[36] = { owner: 2, armies: 1, isBonus: false, isWizard: false, isArcher: true, isTrapDoor: false };
+                game.board[39] = { owner: 2, armies: 1, isBonus: false, isWizard: false, isArcher: true, isTrapDoor: false };
+                game.board[30] = { owner: 2, armies: 1, isBonus: false, isWizard: false, isArcher: true, isTrapDoor: false };
+            }
+            
+            // Stage 20: Boss stage - AI gets 3 wizards and 6 archers (only in campaign)
+            if (game.isCampaign && game.currentStage === 20) {
+                game.board[41] = { owner: 2, armies: 1, isBonus: false, isWizard: true, isArcher: false, isTrapDoor: false };
+                game.board[34] = { owner: 2, armies: 1, isBonus: false, isWizard: true, isArcher: false, isTrapDoor: false };
+                
+                game.board[28] = { owner: 2, armies: 1, isBonus: false, isWizard: false, isArcher: true, isTrapDoor: false };
+                game.board[31] = { owner: 2, armies: 1, isBonus: false, isWizard: false, isArcher: true, isTrapDoor: false };
+                game.board[37] = { owner: 2, armies: 1, isBonus: false, isWizard: false, isArcher: true, isTrapDoor: false };
+            }
+            
+            // Random bonus positions
+            let bonusPositions;
+            if (game.isCampaign && game.campaignConfig) {
+                bonusPositions = game.campaignConfig.bonusPositions[game.currentStage];
+            } else {
+                bonusPositions = [10, 23, 38];
+            }
+            
             bonusPositions.forEach(pos => {
-                game.board[pos] = { owner: 0, armies: 5, isBonus: true, isWizard: false, isTrapDoor: false };
+                if (game.board[pos].owner === 0) {
+                    game.board[pos] = { owner: 0, armies: 5, isBonus: true, isWizard: false, isArcher: false, isTrapDoor: false };
+                }
             });
             
-            // Level 2: Add hidden trap door
-            if (game.currentLevel === 2) {
-                const trapPosition = 18; // Hidden trap in middle area
-                game.board[trapPosition].isTrapDoor = true;
-                game.trapDoor = trapPosition;
+            // Trap door for specific stages (only in campaign)
+            if (game.isCampaign && game.campaignConfig && 
+                game.campaignConfig.dungeonStages.includes(game.currentStage)) {
+                const trapPos = 18 + Math.floor(Math.random() * 12);
+                if (game.board[trapPos].owner === 0) {
+                    game.board[trapPos].isTrapDoor = true;
+                }
             }
             
             game.currentPlayer = 1;
-            game.turnCount = 0;
-            game.phase = 'setup';
+            game.phase = 'wizard_move';
+            game.wizardMovesRemaining = 2;
             game.selectedCell = null;
             game.gameOver = false;
             game.pendingMove = null;
+            game.armiesToDeploy = getReinforcementCount(1);
+            game.archerShots = { player1: 0, player2: 0 };
+            game.wizardAttacksUsed = { player1: false, player2: false };
+            
+            // Update player 2 label
+            if (game.is2Player) {
+                document.getElementById('p2-label').textContent = 'Player 2';
+            } else {
+                document.getElementById('p2-label').textContent = 'AI Opponent';
+            }
             
             renderBoard();
             updateUI();
             
-            document.getElementById('pvp-btn').onclick = () => startGame('pvp');
-            document.getElementById('ai-btn').onclick = () => startGame('ai');
-            document.getElementById('reset-btn').onclick = resetGame;
             document.getElementById('end-btn').onclick = endTurn;
-            document.getElementById('level1-btn').onclick = () => selectLevel(1);
-            document.getElementById('level2-btn').onclick = () => selectLevel(2);
-            
-            // Modal controls
+            document.getElementById('reset-btn').onclick = resetGame;
             document.getElementById('army-slider').oninput = updateSliderDisplay;
             document.getElementById('confirm-move').onclick = confirmMove;
             document.getElementById('cancel-move').onclick = cancelMove;
-        }
-
-        function startGame(mode) {
-            game.gameMode = mode;
-            game.phase = 'wizard_move';
-            game.wizardMovesRemaining = 2;
-            game.armiesToDeploy = getReinforcementCount(game.currentPlayer);
-            game.gameOver = false;
-            document.getElementById('ai-label').textContent = mode === 'ai' ? '(AI)' : '';
-            updateUI();
-            renderBoard();
-        }
-
-        function selectLevel(level) {
-            game.currentLevel = level;
             
-            // Update button styles
-            document.querySelectorAll('.level-btn').forEach(btn => {
-                btn.style.transform = 'scale(1)';
-                btn.style.boxShadow = 'none';
-            });
-            
-            const selectedBtn = document.getElementById(`level${level}-btn`);
-            selectedBtn.style.transform = 'scale(1.1)';
-            selectedBtn.style.boxShadow = '0 0 20px rgba(255, 215, 0, 0.6)';
-            
-            // Reset the game with new level
-            init();
-            
-            showStatus(`Level ${level} selected! ${level === 2 ? '🕳️ Beware of the hidden trap door!' : ''} Choose game mode to start.`);
+            // Show cutscene for stages 5, 10, and 15 in campaign mode
+            if (game.isCampaign && (game.currentStage === 5 || game.currentStage === 10 || game.currentStage === 15)) {
+                setTimeout(() => showCutscene(game.currentStage), 500);
+            }
         }
 
         function resetGame() {
-            init();
-            document.getElementById('status').textContent = 'Select game mode to start';
-            document.getElementById('ai-label').textContent = '';
-            hideModal();
+            if (game.isCampaign) {
+                game.currentStage = 1;
+                game.campaignConfig = generateCampaignConfig();
+                updateStageDisplay();
+            }
+            initStage();
+            document.getElementById('status').textContent = 'Game reset! Your turn.';
+        }
+
+        function nextStage() {
+            if (!game.isCampaign) return;
+            
+            if (game.currentStage < 20) {
+                game.currentStage++;
+                updateStageDisplay();
+                initStage();
+                showStatus(`🎉 Stage ${game.currentStage} begins!`);
+            } else {
+                showStatus('🏆 CAMPAIGN COMPLETE! YOU ARE THE CHAMPION! 🏆');
+                game.gameOver = true;
+            }
         }
 
         function renderBoard() {
@@ -482,9 +860,15 @@
                 
                 if (cell.owner > 0) {
                     const playerColor = cell.owner === 1 ? 'rgba(102, 126, 234, 0.6)' : 'rgba(240, 147, 251, 0.6)';
-                    const characterImage = cell.isWizard 
-                        ? 'https://github.com/TitanBusinessPros/Wynne-Wars/raw/main/Wizard.png'
-                        : 'https://github.com/TitanBusinessPros/Wynne-Wars/raw/main/Swordsmen.png';
+                    let characterImage;
+                    
+                    if (cell.isWizard) {
+                        characterImage = 'https://github.com/TitanBusinessPros/Wynne-Wars/raw/main/Wizard.png';
+                    } else if (cell.isArcher) {
+                        characterImage = 'https://github.com/TitanBusinessPros/Wynne-Wars/raw/main/Archer.png';
+                    } else {
+                        characterImage = 'https://github.com/TitanBusinessPros/Wynne-Wars/raw/main/Swordsmen.png';
+                    }
                     
                     cellEl.innerHTML = `
                         <div style="position: relative; width: 100%; height: 100%;">
@@ -500,16 +884,17 @@
                 boardEl.appendChild(cellEl);
             });
             
-            // Highlight valid targets
             if (game.selectedCell !== null) {
                 if (game.phase === 'wizard_move') {
                     highlightWizardMovement(game.selectedCell);
                 } else if (game.phase === 'expand') {
                     highlightValidExpansion(game.selectedCell);
                 } else if (game.phase === 'attack') {
-                    const isWizard = game.board[game.selectedCell].isWizard;
-                    if (isWizard) {
+                    const cell = game.board[game.selectedCell];
+                    if (cell.isWizard) {
                         highlightWizardTargets(game.selectedCell);
+                    } else if (cell.isArcher) {
+                        highlightArcherTargets(game.selectedCell);
                     } else {
                         highlightValidTargets(game.selectedCell);
                     }
@@ -520,475 +905,314 @@
         }
 
         function handleCellClick(i) {
-            if (!game.gameMode || game.gameOver) return;
-            if (game.gameMode === 'ai' && game.currentPlayer === 2) return;
+            if (game.gameOver) return;
+            
+            // In campaign mode (AI), player 2 can't click
+            if (game.isCampaign && game.currentPlayer === 2) return;
+            
+            // In 2 player mode, both players can click during their turn
             
             const cell = game.board[i];
             
             if (game.phase === 'wizard_move') {
                 if (game.selectedCell === null) {
-                    // Select wizard to move
                     if (cell.owner === game.currentPlayer && cell.isWizard) {
                         game.selectedCell = i;
                         renderBoard();
-                        showStatus(`Player ${game.currentPlayer}: Move wizard to adjacent square (${game.wizardMovesRemaining} moves left)`);
-                    } else {
-                        showStatus(`Select your wizard to move it!`);
+                        showStatus(`Player ${game.currentPlayer}: Move wizard (${game.wizardMovesRemaining} moves left)`);
                     }
                 } else {
-                    // Moving wizard
                     if (i === game.selectedCell) {
                         game.selectedCell = null;
                         renderBoard();
                         updateUI();
                     } else if (isAdjacent(game.selectedCell, i) && cell.owner === 0) {
-                        // Valid wizard movement to empty square
-                        game.board[i].owner = game.currentPlayer;
-                        game.board[i].armies = 1;
-                        game.board[i].isWizard = true;
-                        game.board[game.selectedCell].owner = 0;
-                        game.board[game.selectedCell].armies = 0;
-                        game.board[game.selectedCell].isWizard = false;
-                        
-                        game.wizardMovesRemaining--;
-                        game.selectedCell = null;
-                        
-                        // Check for trap door
-                        if (game.board[i].isTrapDoor) {
-                            setTimeout(() => {
-                                playTrapDoorSound();
-                                showStatus(`💀 TRAP DOOR! Player ${game.currentPlayer}'s wizard fell into the trap!`);
-                                game.board[i].owner = 0;
-                                game.board[i].armies = 0;
-                                game.board[i].isWizard = false;
-                                renderBoard();
-                                updateUI();
-                            }, 100);
-                        }
-                        
-                        if (game.wizardMovesRemaining === 0) {
-                            game.phase = 'deploy';
-                        }
-                        
-                        renderBoard();
-                        updateUI();
-                    } else if (isAdjacent(game.selectedCell, i) && cell.owner !== 0) {
-                        showStatus(`Can only move wizard to empty squares!`);
-                    } else {
-                        showStatus(`Wizard can only move to adjacent squares!`);
+                        moveWizard(game.selectedCell, i);
                     }
                 }
             } else if (game.phase === 'deploy') {
                 if (game.armiesToDeploy > 0) {
-                    // Can deploy to owned territories OR adjacent empty squares
-                    if (cell.owner === game.currentPlayer) {
-                        // Don't allow deploying to wizard squares
-                        if (game.board[i].isWizard) {
-                            showStatus(`Can't deploy to wizard! Wizards remain at 1 army.`);
-                        } else {
-                            game.board[i].armies++;
-                            game.armiesToDeploy--;
-                            
-                            if (game.armiesToDeploy === 0) {
-                                game.phase = 'expand';
-                            }
-                            
-                            renderBoard();
-                            updateUI();
-                        }
-                    } else if (cell.owner === 0 && isAdjacentToPlayer(i, game.currentPlayer)) {
-                        // Deploying to adjacent empty square
-                        const bonusArmies = game.board[i].isBonus ? game.board[i].armies : 0;
-                        const isTrap = game.board[i].isTrapDoor;
-                        
-                        game.board[i].owner = game.currentPlayer;
-                        game.board[i].armies = 1 + bonusArmies;
-                        game.board[i].isBonus = false;
+                    if (cell.owner === game.currentPlayer && !cell.isWizard && !cell.isArcher) {
+                        game.board[i].armies++;
                         game.armiesToDeploy--;
-                        
-                        if (isTrap) {
-                            setTimeout(() => {
-                                playTrapDoorSound();
-                                showStatus(`💀 TRAP DOOR! Player ${game.currentPlayer} lost their army!`);
-                                game.board[i].owner = 0;
-                                game.board[i].armies = 0;
-                                renderBoard();
-                                updateUI();
-                            }, 100);
-                        } else if (bonusArmies > 0) {
-                            showStatus(`Player ${game.currentPlayer} found BONUS! +${bonusArmies} armies! ⭐🎆`);
-                            celebrateBonus();
-                        }
-                        
-                        if (game.armiesToDeploy === 0) {
-                            game.phase = 'expand';
-                        }
-                        
+                        if (game.armiesToDeploy === 0) game.phase = 'expand';
                         renderBoard();
                         updateUI();
-                    } else {
-                        showStatus(`Deploy to your territories or adjacent empty squares! (${game.armiesToDeploy} armies left)`);
+                    } else if (cell.owner === game.currentPlayer && (cell.isWizard || cell.isArcher)) {
+                        showStatus(`Can't deploy to wizards or archers! They stay at 1 army.`);
+                    } else if (cell.owner === 0 && isAdjacentToPlayer(i, game.currentPlayer)) {
+                        deployToEmpty(i);
                     }
                 }
             } else if (game.phase === 'expand') {
-                if (game.selectedCell === null) {
-                    // Select source territory
-                    if (cell.owner === game.currentPlayer && cell.armies > 1) {
-                        game.selectedCell = i;
-                        renderBoard();
-                        showStatus(`Player ${game.currentPlayer}: Click an adjacent empty square to expand`);
-                    } else if (cell.owner === game.currentPlayer && cell.armies <= 1) {
-                        showStatus(`Need at least 2 armies to expand!`);
-                    }
-                } else {
-                    // Choosing target
-                    if (i === game.selectedCell) {
-                        game.selectedCell = null;
-                        renderBoard();
-                        updateUI();
-                    } else if (isAdjacent(game.selectedCell, i) && cell.owner === 0) {
-                        // Valid expansion - show modal
-                        showMoveModal(game.selectedCell, i, 'expand');
-                    } else if (isAdjacent(game.selectedCell, i) && cell.owner !== 0) {
-                        showStatus(`Can't expand there! Click an empty square.`);
-                    } else {
-                        showStatus(`Not adjacent!`);
-                    }
-                }
+                handleExpand(i);
             } else if (game.phase === 'attack') {
-                if (game.selectedCell === null) {
-                    if (cell.owner === game.currentPlayer) {
-                        game.selectedCell = i;
-                        renderBoard();
-                        const isWizard = game.board[i].isWizard;
-                        if (isWizard) {
-                            showStatus(`Player ${game.currentPlayer}: Wizard selected! Click enemy up to 2 squares away (cardinal directions)`);
-                        } else {
-                            showStatus(`Player ${game.currentPlayer}: Click an adjacent enemy to attack`);
-                        }
-                    }
-                } else {
-                    if (i === game.selectedCell) {
-                        game.selectedCell = null;
-                        renderBoard();
-                        updateUI();
-                    } else {
-                        const sourceCell = game.board[game.selectedCell];
-                        const isWizard = sourceCell.isWizard;
-                        
-                        if (isWizard) {
-                            // Wizard can attack up to 2 squares away in cardinal directions
-                            if (isWithinWizardRange(game.selectedCell, i)) {
-                                if (cell.owner !== game.currentPlayer && cell.owner !== 0) {
-                                    performWizardAttack(game.selectedCell, i);
-                                    game.selectedCell = null;
-                                    renderBoard();
-                                    updateUI();
-                                    
-                                    if (!game.gameOver) {
-                                        checkWinCondition();
-                                    }
-                                } else {
-                                    showStatus(`Click an enemy territory to attack!`);
-                                }
-                            } else {
-                                showStatus(`Wizard can only attack up to 2 squares away in straight lines!`);
-                            }
-                        } else {
-                            // Regular swordsman attack
-                            if (isAdjacent(game.selectedCell, i)) {
-                                if (cell.owner !== game.currentPlayer && cell.owner !== 0) {
-                                    performAttack(game.selectedCell, i);
-                                    game.selectedCell = null;
-                                    renderBoard();
-                                    updateUI();
-                                    
-                                    if (!game.gameOver) {
-                                        checkWinCondition();
-                                    }
-                                } else {
-                                    showStatus(`Click an enemy territory to attack!`);
-                                }
-                            } else {
-                                showStatus(`Not adjacent!`);
-                            }
-                        }
-                    }
-                }
+                handleAttack(i);
             } else if (game.phase === 'fortify') {
-                if (game.selectedCell === null) {
-                    // Select source territory
-                    if (cell.owner === game.currentPlayer && cell.armies > 1) {
-                        game.selectedCell = i;
-                        renderBoard();
-                        showStatus(`Player ${game.currentPlayer}: Click an adjacent friendly territory to move armies`);
-                    } else if (cell.owner === game.currentPlayer && cell.armies <= 1) {
-                        showStatus(`Need at least 2 armies to move troops!`);
-                    }
-                } else {
-                    // Choosing target
-                    if (i === game.selectedCell) {
-                        game.selectedCell = null;
-                        renderBoard();
-                        updateUI();
-                    } else if (isAdjacent(game.selectedCell, i) && cell.owner === game.currentPlayer) {
-                        // Valid fortify move - show modal
-                        showMoveModal(game.selectedCell, i, 'fortify');
-                    } else if (isAdjacent(game.selectedCell, i)) {
-                        showStatus(`Can only move to your own territories!`);
-                    } else {
-                        showStatus(`Not adjacent!`);
-                    }
-                }
+                handleFortify(i);
             }
         }
 
-        function showMoveModal(from, to, action) {
-            const fromCell = game.board[from];
-            const maxMove = fromCell.armies - 1;
-            
-            game.pendingMove = { from, to, action };
-            
-            const slider = document.getElementById('army-slider');
-            slider.max = maxMove;
-            slider.value = Math.min(maxMove, slider.value);
-            
-            if (action === 'expand') {
-                const toCell = game.board[to];
-                const bonusText = toCell.isBonus ? ` (Bonus: +${toCell.armies} armies!)` : '';
-                document.getElementById('move-description').textContent = 
-                    `Expanding to new territory${bonusText}`;
-            } else if (action === 'fortify') {
-                document.getElementById('move-description').textContent = 
-                    `Moving armies to friendly territory`;
-            }
-            
-            updateSliderDisplay();
-            document.getElementById('move-modal').classList.add('show');
-        }
-
-        function hideModal() {
-            document.getElementById('move-modal').classList.remove('show');
-            game.pendingMove = null;
-        }
-
-        function updateSliderDisplay() {
-            const slider = document.getElementById('army-slider');
-            const moving = parseInt(slider.value);
-            const fromCell = game.board[game.pendingMove.from];
-            const leaving = fromCell.armies - moving;
-            
-            document.getElementById('slider-value').textContent = moving;
-            document.getElementById('moving-armies').textContent = moving;
-            document.getElementById('leaving-armies').textContent = leaving;
-        }
-
-        function confirmMove() {
-            if (!game.pendingMove) return;
-            
-            const { from, to, action } = game.pendingMove;
-            const armiesToMove = parseInt(document.getElementById('army-slider').value);
-            
-            if (action === 'expand') {
-                performExpansion(from, to, armiesToMove);
-            } else if (action === 'fortify') {
-                performFortify(from, to, armiesToMove);
-            }
-            
-            hideModal();
-            game.selectedCell = null;
-            renderBoard();
-            updateUI();
-            
-            if (!game.gameOver) {
-                checkWinCondition();
-            }
-        }
-
-        function cancelMove() {
-            hideModal();
-        }
-
-        function performExpansion(from, to, armiesToMove) {
-            const targetCell = game.board[to];
-            const bonusArmies = targetCell.isBonus ? targetCell.armies : 0;
-            
-            game.board[from].armies -= armiesToMove;
+        function moveWizard(from, to) {
             game.board[to].owner = game.currentPlayer;
-            game.board[to].armies = armiesToMove + bonusArmies;
-            game.board[to].isBonus = false;
+            game.board[to].armies = 1;
+            game.board[to].isWizard = true;
+            game.board[from].owner = 0;
+            game.board[from].armies = 0;
+            game.board[from].isWizard = false;
             
-            // Check for trap door
-            if (targetCell.isTrapDoor) {
+            game.wizardMovesRemaining--;
+            game.selectedCell = null;
+            
+            if (game.board[to].isTrapDoor) {
                 setTimeout(() => {
                     playTrapDoorSound();
-                    showStatus(`💀 TRAP DOOR! Player ${game.currentPlayer} lost ${game.board[to].armies} armies!`);
+                    showStatus(`💀 TRAP DOOR! Player ${game.currentPlayer}'s wizard is lost!`);
                     game.board[to].owner = 0;
                     game.board[to].armies = 0;
+                    game.board[to].isWizard = false;
                     renderBoard();
-                    updateUI();
+                }, 100);
+            }
+            
+            if (game.wizardMovesRemaining === 0) game.phase = 'deploy';
+            renderBoard();
+            updateUI();
+        }
+
+        function deployToEmpty(i) {
+            const bonusArmies = game.board[i].isBonus ? game.board[i].armies : 0;
+            game.board[i].owner = game.currentPlayer;
+            game.board[i].armies = 1 + bonusArmies;
+            game.board[i].isBonus = false;
+            game.armiesToDeploy--;
+            
+            if (game.board[i].isTrapDoor) {
+                setTimeout(() => {
+                    playTrapDoorSound();
+                    showStatus(`💀 TRAP DOOR! Player ${game.currentPlayer} lost!`);
+                    game.board[i].owner = 0;
+                    game.board[i].armies = 0;
+                    renderBoard();
                 }, 100);
             } else if (bonusArmies > 0) {
-                showStatus(`Player ${game.currentPlayer} found BONUS! +${bonusArmies} armies! ⭐🎆`);
+                showStatus(`Player ${game.currentPlayer} BONUS! +${bonusArmies} armies! ⭐`);
                 celebrateBonus();
+            }
+            
+            if (game.armiesToDeploy === 0) game.phase = 'expand';
+            renderBoard();
+            updateUI();
+        }
+
+        function handleExpand(i) {
+            if (game.selectedCell === null) {
+                if (game.board[i].owner === game.currentPlayer && game.board[i].armies > 1 && !game.board[i].isWizard && !game.board[i].isArcher) {
+                    game.selectedCell = i;
+                    renderBoard();
+                    showStatus(`Player ${game.currentPlayer}: Click adjacent empty square to expand`);
+                }
             } else {
-                showStatus(`Player ${game.currentPlayer} expanded territory!`);
+                if (i === game.selectedCell) {
+                    game.selectedCell = null;
+                    renderBoard();
+                } else if (isAdjacent(game.selectedCell, i) && game.board[i].owner === 0) {
+                    showMoveModal(game.selectedCell, i, 'expand');
+                }
             }
         }
 
-        function celebrateBonus() {
-            // Play celebration sound
-            playBonusSound();
-            
-            // Create fireworks effect
-            createFireworks();
+        function handleAttack(i) {
+            const opponent = game.currentPlayer === 1 ? 2 : 1;
+            if (game.selectedCell === null) {
+                if (game.board[i].owner === game.currentPlayer && game.board[i].armies > 0) {
+                    // Check if selecting a wizard that already attacked
+                    if (game.board[i].isWizard) {
+                        const wizardKey = game.currentPlayer === 1 ? 'player1' : 'player2';
+                        if (game.wizardAttacksUsed[wizardKey]) {
+                            showStatus(`Player ${game.currentPlayer}: Wizard has already attacked this turn!`);
+                            return;
+                        }
+                    }
+                    
+                    game.selectedCell = i;
+                    renderBoard();
+                    showStatus(`Player ${game.currentPlayer}: Select enemy to attack`);
+                }
+            } else {
+                if (i === game.selectedCell) {
+                    game.selectedCell = null;
+                    renderBoard();
+                } else {
+                    const sourceCell = game.board[game.selectedCell];
+                    if (game.board[i].owner === opponent) {
+                        if (sourceCell.isWizard && isWithinWizardRange(game.selectedCell, i)) {
+                            performWizardAttack(game.selectedCell, i);
+                        } else if (sourceCell.isArcher && isWithinArcherRange(game.selectedCell, i)) {
+                            performArcherAttack(game.selectedCell, i);
+                        } else if (!sourceCell.isWizard && !sourceCell.isArcher && isAdjacent(game.selectedCell, i)) {
+                            performAttack(game.selectedCell, i);
+                        }
+                        game.selectedCell = null;
+                        renderBoard();
+                        updateUI();
+                        checkWinCondition();
+                    }
+                }
+            }
         }
 
-        function playBonusSound() {
-            // Create a celebratory sound using Web Audio API
-            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        function handleFortify(i) {
+            if (game.selectedCell === null) {
+                if (game.board[i].owner === game.currentPlayer && game.board[i].armies > 1 && !game.board[i].isWizard && !game.board[i].isArcher) {
+                    game.selectedCell = i;
+                    renderBoard();
+                    showStatus(`Player ${game.currentPlayer}: Select friendly territory to move armies to`);
+                }
+            } else {
+                if (i === game.selectedCell) {
+                    game.selectedCell = null;
+                    renderBoard();
+                } else if (isAdjacent(game.selectedCell, i) && game.board[i].owner === game.currentPlayer) {
+                    showMoveModal(game.selectedCell, i, 'fortify');
+                }
+            }
+        }
+
+        function performAttack(from, to) {
+            const attacker = game.board[from];
+            const defender = game.board[to];
             
-            // Play multiple notes in quick succession for a fanfare
-            const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
-            notes.forEach((freq, i) => {
-                setTimeout(() => {
-                    const oscillator = audioContext.createOscillator();
-                    const gainNode = audioContext.createGain();
-                    
-                    oscillator.connect(gainNode);
-                    gainNode.connect(audioContext.destination);
-                    
-                    oscillator.frequency.value = freq;
-                    oscillator.type = 'sine';
-                    
-                    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
-                    
-                    oscillator.start(audioContext.currentTime);
-                    oscillator.stop(audioContext.currentTime + 0.5);
-                }, i * 100);
+            if (attacker.armies > defender.armies) {
+                // Attacker wins
+                const remaining = attacker.armies - defender.armies;
+                game.board[to].owner = attacker.owner;
+                game.board[to].armies = remaining;
+                game.board[to].isWizard = false;
+                game.board[to].isArcher = false;
+                game.board[from].armies = 0;
+                game.board[from].owner = 0;
+                const playerName = attacker.owner === 1 ? 'Player' : 'AI';
+                showStatus(`${playerName} conquered! ${attacker.armies} vs ${defender.armies} = ${remaining} remaining 🎯`);
+            } else if (attacker.armies === defender.armies) {
+                // Tie - both eliminated
+                game.board[from].armies = 0;
+                game.board[from].owner = 0;
+                game.board[to].armies = 0;
+                game.board[to].owner = 0;
+                game.board[to].isWizard = false;
+                game.board[to].isArcher = false;
+                showStatus(`Mutual destruction! ${attacker.armies} vs ${defender.armies} 💥`);
+            } else {
+                // Defender wins - keep all defender units, attacker eliminated
+                game.board[from].armies = 0;
+                game.board[from].owner = 0;
+                // Defender keeps everything - no changes needed
+                const playerName = defender.owner === 1 ? 'Player' : 'AI';
+                showStatus(`${playerName} defended! ${attacker.armies} vs ${defender.armies} - Attacker eliminated! 🛡️`);
+            }
+        }
+
+        function performWizardAttack(from, to) {
+            playWizardSound();
+            const ballColor = game.board[from].owner === 1 ? 'blue' : 'red';
+            
+            // Mark wizard as having attacked
+            const wizardKey = game.board[from].owner === 1 ? 'player1' : 'player2';
+            game.wizardAttacksUsed[wizardKey] = true;
+            
+            animateMagicBall(from, to, ballColor, () => {
+                const remaining = game.board[to].armies - 2;
+                const playerName = game.board[from].owner === 1 ? 'Player 1' : 'Player 2';
+                if (remaining <= 0) {
+                    game.board[to].owner = 0;
+                    game.board[to].armies = 0;
+                    game.board[to].isWizard = false;
+                    game.board[to].isArcher = false;
+                    showStatus(`${playerName} Wizard destroyed target! 🔮⚡`);
+                } else {
+                    game.board[to].armies = remaining;
+                    showStatus(`${playerName} Wizard hit! ${remaining} remain 🔮⚡`);
+                }
+                renderBoard();
+                updateUI();
+                checkWinCondition();
             });
         }
 
-        function createFireworks() {
-            const container = document.querySelector('.container');
-            const colors = ['#FFD700', '#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8'];
-            
-            // Create multiple firework bursts
-            for (let burst = 0; burst < 3; burst++) {
-                setTimeout(() => {
-                    const centerX = container.offsetWidth / 2;
-                    const centerY = 100 + Math.random() * 100;
-                    
-                    // Create particles
-                    for (let i = 0; i < 30; i++) {
-                        const particle = document.createElement('div');
-                        particle.style.position = 'absolute';
-                        particle.style.left = centerX + 'px';
-                        particle.style.top = centerY + 'px';
-                        particle.style.width = '8px';
-                        particle.style.height = '8px';
-                        particle.style.borderRadius = '50%';
-                        particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-                        particle.style.pointerEvents = 'none';
-                        particle.style.zIndex = '1000';
-                        
-                        container.style.position = 'relative';
-                        container.appendChild(particle);
-                        
-                        // Random direction
-                        const angle = (Math.PI * 2 * i) / 30;
-                        const velocity = 100 + Math.random() * 100;
-                        const vx = Math.cos(angle) * velocity;
-                        const vy = Math.sin(angle) * velocity;
-                        
-                        // Animate
-                        let posX = centerX;
-                        let posY = centerY;
-                        let life = 1;
-                        
-                        const animate = () => {
-                            posX += vx * 0.016;
-                            posY += vy * 0.016;
-                            life -= 0.02;
-                            
-                            particle.style.left = posX + 'px';
-                            particle.style.top = posY + 'px';
-                            particle.style.opacity = life;
-                            
-                            if (life > 0) {
-                                requestAnimationFrame(animate);
-                            } else {
-                                particle.remove();
-                            }
-                        };
-                        
-                        requestAnimationFrame(animate);
-                    }
-                }, burst * 300);
-            }
+        function performArcherAttack(from, to) {
+            playArcherSound();
+            animateArrow(from, to, () => {
+                const remaining = game.board[to].armies - 1;
+                const playerName = game.board[from].owner === 1 ? 'Player 1' : 'Player 2';
+                if (remaining <= 0) {
+                    game.board[to].owner = 0;
+                    game.board[to].armies = 0;
+                    game.board[to].isWizard = false;
+                    game.board[to].isArcher = false;
+                    showStatus(`${playerName} Archer eliminated target! 🏹`);
+                } else {
+                    game.board[to].armies = remaining;
+                    showStatus(`${playerName} Archer hit! ${remaining} remain 🏹`);
+                }
+                renderBoard();
+                updateUI();
+                checkWinCondition();
+            });
         }
 
-        function performFortify(from, to, armiesToMove) {
-            game.board[from].armies -= armiesToMove;
-            game.board[to].armies += armiesToMove;
+        function isWithinArcherRange(from, to) {
+            const rowFrom = Math.floor(from / 8);
+            const colFrom = from % 8;
+            const rowTo = Math.floor(to / 8);
+            const colTo = to % 8;
             
-            showStatus(`Player ${game.currentPlayer} moved ${armiesToMove} armies`);
-        }
-
-        function isAdjacent(i, j) {
-            const row1 = Math.floor(i / 6);
-            const col1 = i % 6;
-            const row2 = Math.floor(j / 6);
-            const col2 = j % 6;
+            if (rowFrom !== rowTo && colFrom !== colTo) return false;
             
-            return (Math.abs(row1 - row2) === 1 && col1 === col2) ||
-                   (Math.abs(col1 - col2) === 1 && row1 === row2);
-        }
-
-        function isAdjacentToPlayer(i, player) {
-            const adjacentCells = getAdjacentCells(i);
-            return adjacentCells.some(adj => game.board[adj].owner === player);
+            const distance = Math.abs(rowFrom - rowTo) + Math.abs(colFrom - colTo);
+            return distance >= 1 && distance <= 3;
         }
 
         function isWithinWizardRange(from, to) {
-            const rowFrom = Math.floor(from / 6);
-            const colFrom = from % 6;
-            const rowTo = Math.floor(to / 6);
-            const colTo = to % 6;
+            const rowFrom = Math.floor(from / 8);
+            const colFrom = from % 8;
+            const rowTo = Math.floor(to / 8);
+            const colTo = to % 8;
             
-            // Must be in same row or column (cardinal directions only)
             if (rowFrom !== rowTo && colFrom !== colTo) return false;
             
-            // Calculate distance
             const distance = Math.abs(rowFrom - rowTo) + Math.abs(colFrom - colTo);
-            
-            // Must be 1 or 2 squares away
             return distance >= 1 && distance <= 2;
         }
 
-        function highlightValidExpansion(i) {
+        function highlightArcherTargets(i) {
             const cells = document.querySelectorAll('.cell');
+            const currentPlayer = game.board[i].owner;
+            const opponent = currentPlayer === 1 ? 2 : 1;
             cells.forEach((cellEl, j) => {
-                if (isAdjacent(i, j) && game.board[j].owner === 0) {
-                    cellEl.classList.add('valid-expansion');
-                }
-            });
-        }
-
-        function highlightValidFortify(i) {
-            const cells = document.querySelectorAll('.cell');
-            cells.forEach((cellEl, j) => {
-                if (isAdjacent(i, j) && game.board[j].owner === game.currentPlayer) {
-                    cellEl.classList.add('valid-fortify');
+                if (isWithinArcherRange(i, j) && game.board[j].owner === opponent) {
+                    cellEl.classList.add('valid-move');
                 }
             });
         }
 
         function highlightWizardTargets(i) {
             const cells = document.querySelectorAll('.cell');
+            const currentPlayer = game.board[i].owner;
+            const opponent = currentPlayer === 1 ? 2 : 1;
             cells.forEach((cellEl, j) => {
-                if (isWithinWizardRange(i, j) && game.board[j].owner !== game.currentPlayer && game.board[j].owner !== 0) {
+                if (isWithinWizardRange(i, j) && game.board[j].owner === opponent) {
+                    cellEl.classList.add('valid-move');
+                }
+            });
+        }
+
+        function highlightValidTargets(i) {
+            const cells = document.querySelectorAll('.cell');
+            const currentPlayer = game.board[i].owner;
+            const opponent = currentPlayer === 1 ? 2 : 1;
+            cells.forEach((cellEl, j) => {
+                if (isAdjacent(i, j) && game.board[j].owner === opponent) {
                     cellEl.classList.add('valid-move');
                 }
             });
@@ -1003,261 +1227,50 @@
             });
         }
 
-        function highlightValidTargets(i) {
+        function highlightValidExpansion(i) {
             const cells = document.querySelectorAll('.cell');
             cells.forEach((cellEl, j) => {
-                if (isAdjacent(i, j) && game.board[j].owner !== game.currentPlayer && game.board[j].owner !== 0) {
-                    cellEl.classList.add('valid-move');
+                if (isAdjacent(i, j) && game.board[j].owner === 0) {
+                    cellEl.classList.add('valid-expansion');
                 }
             });
         }
 
-        function performAttack(from, to) {
-            const attacker = game.board[from];
-            const defender = game.board[to];
-            
-            // Simple number comparison - higher number wins
-            if (attacker.armies > defender.armies) {
-                // Attacker wins - remaining armies = attacker - defender
-                const remainingArmies = attacker.armies - defender.armies;
-                game.board[to].owner = game.currentPlayer;
-                game.board[to].armies = remainingArmies;
-                game.board[from].armies = 0;
-                game.board[from].owner = 0; // Territory becomes empty
-                
-                showStatus(`Player ${game.currentPlayer} conquered! ${attacker.armies} vs ${defender.armies} = ${remainingArmies} remaining 🎯`);
-            } else {
-                // Defender wins or tie - attacker's territory becomes empty
-                game.board[from].armies = 0;
-                game.board[from].owner = 0;
-                showStatus(`Attack failed! ${attacker.armies} vs ${defender.armies} - Defender holds! 🛡️`);
-            }
-        }
-
-        function performWizardAttack(from, to) {
-            // Play wizard sound and animate magic ball
-            playWizardSound();
-            
-            // Determine ball color based on current player
-            const ballColor = game.currentPlayer === 1 ? 'blue' : 'red';
-            
-            animateMagicBall(from, to, ballColor, () => {
-                // After animation completes, resolve the attack
-                const defender = game.board[to];
-                
-                // Wizard kills 2 units
-                const remainingDefenders = defender.armies - 2;
-                
-                if (remainingDefenders <= 0) {
-                    // Target destroyed - square becomes empty
-                    game.board[to].owner = 0;
-                    game.board[to].armies = 0;
-                    game.board[to].isWizard = false;
-                    
-                    showStatus(`Player ${game.currentPlayer}'s Wizard destroyed target! 🔮⚡`);
-                } else {
-                    // Target survives with reduced armies
-                    game.board[to].armies = remainingDefenders;
-                    
-                    showStatus(`Player ${game.currentPlayer}'s Wizard killed 2 units! ${remainingDefenders} remain! 🔮⚡`);
-                }
-                
-                renderBoard();
-                updateUI();
-                
-                if (!game.gameOver) {
-                    checkWinCondition();
+        function highlightValidFortify(i) {
+            const cells = document.querySelectorAll('.cell');
+            const currentPlayer = game.board[i].owner;
+            cells.forEach((cellEl, j) => {
+                if (isAdjacent(i, j) && game.board[j].owner === currentPlayer) {
+                    cellEl.classList.add('valid-fortify');
                 }
             });
-        }
-
-        function playWizardSound() {
-            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            
-            // Create mystical whoosh sound
-            const oscillator1 = audioContext.createOscillator();
-            const oscillator2 = audioContext.createOscillator();
-            const gainNode = audioContext.createGain();
-            
-            oscillator1.connect(gainNode);
-            oscillator2.connect(gainNode);
-            gainNode.connect(audioContext.destination);
-            
-            // Descending frequency for magic effect
-            oscillator1.frequency.setValueAtTime(800, audioContext.currentTime);
-            oscillator1.frequency.exponentialRampToValueAtTime(200, audioContext.currentTime + 0.5);
-            oscillator1.type = 'sine';
-            
-            oscillator2.frequency.setValueAtTime(1200, audioContext.currentTime);
-            oscillator2.frequency.exponentialRampToValueAtTime(300, audioContext.currentTime + 0.5);
-            oscillator2.type = 'triangle';
-            
-            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
-            
-            oscillator1.start(audioContext.currentTime);
-            oscillator2.start(audioContext.currentTime);
-            oscillator1.stop(audioContext.currentTime + 0.5);
-            oscillator2.stop(audioContext.currentTime + 0.5);
-        }
-
-        function playTrapDoorSound() {
-            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            
-            // Create ominous descending trap door sound
-            const oscillator = audioContext.createOscillator();
-            const gainNode = audioContext.createGain();
-            
-            oscillator.connect(gainNode);
-            gainNode.connect(audioContext.destination);
-            
-            // Sharp descending "falling" sound
-            oscillator.frequency.setValueAtTime(600, audioContext.currentTime);
-            oscillator.frequency.exponentialRampToValueAtTime(50, audioContext.currentTime + 0.8);
-            oscillator.type = 'sawtooth';
-            
-            gainNode.gain.setValueAtTime(0.4, audioContext.currentTime);
-            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.8);
-            
-            oscillator.start(audioContext.currentTime);
-            oscillator.stop(audioContext.currentTime + 0.8);
-            
-            // Add a "thud" at the end
-            setTimeout(() => {
-                const thud = audioContext.createOscillator();
-                const thudGain = audioContext.createGain();
-                
-                thud.connect(thudGain);
-                thudGain.connect(audioContext.destination);
-                
-                thud.frequency.setValueAtTime(80, audioContext.currentTime);
-                thud.type = 'sine';
-                
-                thudGain.gain.setValueAtTime(0.5, audioContext.currentTime);
-                thudGain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
-                
-                thud.start(audioContext.currentTime);
-                thud.stop(audioContext.currentTime + 0.2);
-            }, 600);
-        }
-
-        function animateMagicBall(from, to, color, onComplete) {
-            const board = document.getElementById('board');
-            const cells = board.querySelectorAll('.cell');
-            
-            const fromCell = cells[from];
-            const toCell = cells[to];
-            
-            if (!fromCell || !toCell) {
-                onComplete();
-                return;
-            }
-            
-            const fromRect = fromCell.getBoundingClientRect();
-            const toRect = toCell.getBoundingClientRect();
-            
-            // Color definitions
-            const colors = {
-                blue: {
-                    gradient: 'radial-gradient(circle, #60a5fa, #3b82f6, #1e40af)',
-                    glow: '#60a5fa'
-                },
-                red: {
-                    gradient: 'radial-gradient(circle, #f87171, #ef4444, #dc2626)',
-                    glow: '#f87171'
-                }
-            };
-            
-            const selectedColor = colors[color];
-            
-            // Create magic ball on body with FIXED positioning
-            const ball = document.createElement('div');
-            ball.style.position = 'fixed';
-            ball.style.width = '50px';
-            ball.style.height = '50px';
-            ball.style.borderRadius = '50%';
-            ball.style.background = selectedColor.gradient;
-            ball.style.boxShadow = `0 0 40px ${selectedColor.glow}, 0 0 80px ${selectedColor.glow}`;
-            ball.style.left = (fromRect.left + fromRect.width / 2 - 25) + 'px';
-            ball.style.top = (fromRect.top + fromRect.height / 2 - 25) + 'px';
-            ball.style.zIndex = '99999';
-            ball.style.pointerEvents = 'none';
-            ball.style.border = `4px solid ${selectedColor.glow}`;
-            
-            document.body.appendChild(ball);
-            
-            // Animate to target
-            const startX = fromRect.left + fromRect.width / 2 - 25;
-            const startY = fromRect.top + fromRect.height / 2 - 25;
-            const endX = toRect.left + toRect.width / 2 - 25;
-            const endY = toRect.top + toRect.height / 2 - 25;
-            
-            const duration = 1500;
-            const startTime = Date.now();
-            
-            function animate() {
-                const elapsed = Date.now() - startTime;
-                const progress = Math.min(elapsed / duration, 1);
-                
-                const currentX = startX + (endX - startX) * progress;
-                const currentY = startY + (endY - startY) * progress;
-                
-                ball.style.left = currentX + 'px';
-                ball.style.top = currentY + 'px';
-                
-                const scale = 1 + Math.sin(progress * Math.PI * 8) * 0.3;
-                ball.style.transform = `scale(${scale})`;
-                
-                if (progress < 1) {
-                    requestAnimationFrame(animate);
-                } else {
-                    ball.style.transform = 'scale(2.5)';
-                    ball.style.opacity = '0';
-                    ball.style.transition = 'all 0.2s';
-                    
-                    setTimeout(() => {
-                        ball.remove();
-                        onComplete();
-                    }, 200);
-                }
-            }
-            
-            animate();
-        }
-
-        function getReinforcementCount(player) {
-            const territories = game.board.filter(c => c.owner === player).length;
-            return Math.max(3, Math.floor(territories / 3));
         }
 
         function endTurn() {
-            if (!game.gameMode || game.gameOver) return;
-            if (game.phase === 'deploy' && game.armiesToDeploy > 0) return;
+            if (game.gameOver) return;
             
-            // If in fortify phase, actually end turn
             if (game.phase === 'fortify') {
                 game.currentPlayer = game.currentPlayer === 1 ? 2 : 1;
-                game.turnCount++;
                 game.phase = 'wizard_move';
                 game.wizardMovesRemaining = 2;
-                game.armiesToDeploy = getReinforcementCount(game.currentPlayer);
                 game.selectedCell = null;
+                game.armiesToDeploy = getReinforcementCount(game.currentPlayer);
+                
+                // Reset wizard attack tracker for new turn
+                game.wizardAttacksUsed = { player1: false, player2: false };
                 
                 updateUI();
                 renderBoard();
                 
-                if (game.turnCount >= game.maxTurns * 2) {
-                    checkWinCondition();
-                    return;
-                }
-                
-                if (game.gameMode === 'ai' && game.currentPlayer === 2) {
+                // Only trigger AI turn if in campaign mode (not 2 player)
+                if (game.isCampaign && game.currentPlayer === 2) {
                     setTimeout(() => {
                         if (!game.gameOver) aiTurn();
                     }, 1000);
+                } else if (game.is2Player) {
+                    showStatus(`Player ${game.currentPlayer}'s turn! Move your wizard.`);
                 }
             } else {
-                // Move to next phase
                 if (game.phase === 'wizard_move') {
                     game.phase = 'deploy';
                     game.wizardMovesRemaining = 0;
@@ -1268,7 +1281,6 @@
                 } else if (game.phase === 'attack') {
                     game.phase = 'fortify';
                 }
-                
                 game.selectedCell = null;
                 updateUI();
                 renderBoard();
@@ -1278,129 +1290,214 @@
         function aiTurn() {
             showStatus('AI is thinking...');
             
-            // Wizard movement phase
-            aiWizardMove();
+            // Wizard movement
+            game.phase = 'wizard_move';
+            updateUI();
+            renderBoard();
             
             setTimeout(() => {
-                game.phase = 'deploy';
-                updateUI();
+                aiWizardMove();
                 
                 setTimeout(() => {
-                    aiDeploy();
+                    // Deploy phase
+                    game.phase = 'deploy';
+                    updateUI();
+                    renderBoard();
                     
                     setTimeout(() => {
-                        game.phase = 'expand';
-                        updateUI();
+                        aiDeploy();
                         
                         setTimeout(() => {
-                            aiExpand();
+                            // Expand phase
+                            game.phase = 'expand';
+                            updateUI();
+                            renderBoard();
                             
                             setTimeout(() => {
-                                game.phase = 'attack';
-                                updateUI();
+                                aiExpand();
                                 
                                 setTimeout(() => {
-                                    aiAttack();
+                                    // Attack phase
+                                    game.phase = 'attack';
+                                    updateUI();
+                                    renderBoard();
                                     
                                     setTimeout(() => {
-                                        game.phase = 'fortify';
-                                        updateUI();
+                                        aiAttack();
                                         
                                         setTimeout(() => {
-                                            aiFortify();
+                                            aiArcherPhase();
                                             
                                             setTimeout(() => {
-                                                if (!game.gameOver) {
-                                                    endTurn();
-                                                }
-                                            }, 800);
-                                        }, 800);
-                                    }, 800);
-                                }, 800);
-                            }, 800);
-                        }, 800);
-                    }, 800);
-                }, 800);
+                                                // Fortify phase
+                                                game.phase = 'fortify';
+                                                updateUI();
+                                                renderBoard();
+                                                
+                                                setTimeout(() => {
+                                                    aiFortify();
+                                                    
+                                                    setTimeout(() => {
+                                                        // End AI turn
+                                                        if (!game.gameOver) {
+                                                            game.currentPlayer = 1;
+                                                            game.phase = 'wizard_move';
+                                                            game.wizardMovesRemaining = 2;
+                                                            game.armiesToDeploy = getReinforcementCount(1);
+                                                            updateUI();
+                                                            renderBoard();
+                                                            showStatus('Your turn! Move your wizard.');
+                                                        }
+                                                    }, 600);
+                                                }, 600);
+                                            }, 600);
+                                        }, 600);
+                                    }, 600);
+                                }, 600);
+                            }, 600);
+                        }, 600);
+                    }, 600);
+                }, 600);
             }, 800);
         }
 
         function aiWizardMove() {
-            // AI moves wizard toward enemies or defensively
-            const wizardIndex = game.board.findIndex(c => c.owner === 2 && c.isWizard);
-            if (wizardIndex === -1) return;
+            const wizards = game.board.map((c, i) => c.owner === 2 && c.isWizard ? i : -1).filter(i => i !== -1);
             
-            for (let move = 0; move < 2; move++) {
-                const currentWizard = game.board.findIndex(c => c.owner === 2 && c.isWizard);
-                if (currentWizard === -1) break;
-                
-                const adjacentEmpty = getAdjacentCells(currentWizard).filter(adj => game.board[adj].owner === 0);
-                
-                if (adjacentEmpty.length > 0) {
-                    // Move toward center or random direction
-                    const target = adjacentEmpty[Math.floor(Math.random() * adjacentEmpty.length)];
+            wizards.forEach(wizardIdx => {
+                for (let move = 0; move < 2; move++) {
+                    const currentWiz = game.board.findIndex((c, i) => i >= wizardIdx && c.owner === 2 && c.isWizard);
+                    if (currentWiz === -1) break;
                     
-                    game.board[target].owner = 2;
-                    game.board[target].armies = 1;
-                    game.board[target].isWizard = true;
-                    game.board[currentWizard].owner = 0;
-                    game.board[currentWizard].armies = 0;
-                    game.board[currentWizard].isWizard = false;
-                    
-                    renderBoard();
-                    updateUI();
+                    const adjacent = getAdjacentCells(currentWiz).filter(adj => game.board[adj].owner === 0);
+                    if (adjacent.length > 0) {
+                        // Evaluate safety of each move
+                        const moveEvaluations = adjacent.map(adj => {
+                            const adjacentToMove = getAdjacentCells(adj);
+                            
+                            // Count player threats near this position
+                            const playerThreats = adjacentToMove.filter(cell => 
+                                game.board[cell].owner === 1 && 
+                                game.board[cell].armies > 0
+                            );
+                            
+                            // Count friendly protection near this position
+                            const friendlyProtection = adjacentToMove.filter(cell => 
+                                game.board[cell].owner === 2 && 
+                                !game.board[cell].isWizard &&
+                                game.board[cell].armies >= 3
+                            );
+                            
+                            // Calculate danger score (lower is better)
+                            const dangerScore = playerThreats.length * 10 - friendlyProtection.length * 5;
+                            
+                            // Prefer positions away from front lines (higher row number)
+                            const row = Math.floor(adj / 8);
+                            const retreatBonus = row * 2;
+                            
+                            return {
+                                position: adj,
+                                score: dangerScore - retreatBonus
+                            };
+                        });
+                        
+                        // Sort by safety (lowest score is safest)
+                        moveEvaluations.sort((a, b) => a.score - b.score);
+                        
+                        // Pick the safest move
+                        const target = moveEvaluations[0].position;
+                        
+                        game.board[target].owner = 2;
+                        game.board[target].armies = 1;
+                        game.board[target].isWizard = true;
+                        game.board[currentWiz].owner = 0;
+                        game.board[currentWiz].armies = 0;
+                        game.board[currentWiz].isWizard = false;
+                        renderBoard();
+                    }
                 }
-            }
+            });
         }
 
         function aiDeploy() {
-            const aiTerritories = game.board
-                .map((c, i) => ({ i, c }))
-                .filter(x => x.c.owner === 2);
+            game.armiesToDeploy = getReinforcementCount(2);
             
             while (game.armiesToDeploy > 0) {
-                // Prefer expanding to adjacent empty squares, especially bonus ones
-                const expandOptions = [];
-                aiTerritories.forEach(t => {
-                    const adjacentEmpty = getAdjacentCells(t.i).filter(adj => game.board[adj].owner === 0);
-                    adjacentEmpty.forEach(adj => {
-                        if (!expandOptions.includes(adj)) {
-                            expandOptions.push(adj);
+                const aiTerritories = game.board
+                    .map((c, i) => ({ i, c }))
+                    .filter(x => x.c.owner === 2 && !x.c.isWizard && !x.c.isArcher);
+                
+                // PRIORITY 1: Protect wizards - deploy adjacent to wizards
+                const wizardPositions = game.board
+                    .map((c, i) => c.owner === 2 && c.isWizard ? i : -1)
+                    .filter(i => i !== -1);
+                
+                const wizardGuards = [];
+                wizardPositions.forEach(wiz => {
+                    getAdjacentCells(wiz).forEach(adj => {
+                        if (game.board[adj].owner === 2 && !game.board[adj].isWizard && !game.board[adj].isArcher) {
+                            wizardGuards.push(adj);
                         }
                     });
                 });
                 
-                // Check for bonus squares
+                // PRIORITY 2: Territories directly threatened by player
+                const threatenedTerritories = aiTerritories.filter(t => {
+                    const adjacent = getAdjacentCells(t.i);
+                    const playerThreats = adjacent.filter(adj => 
+                        game.board[adj].owner === 1 && 
+                        game.board[adj].armies > t.c.armies
+                    );
+                    return playerThreats.length > 0;
+                });
+                
+                // PRIORITY 3: Border territories
+                const borderTerritories = aiTerritories.filter(t => {
+                    return getAdjacentCells(t.i).some(adj => game.board[adj].owner === 1);
+                });
+                
+                // PRIORITY 4: Look for bonus expansions
+                const expandOptions = [];
+                aiTerritories.forEach(t => {
+                    getAdjacentCells(t.i).forEach(adj => {
+                        if (game.board[adj].owner === 0 && !expandOptions.includes(adj)) {
+                            expandOptions.push(adj);
+                        }
+                    });
+                });
                 const bonusExpand = expandOptions.filter(i => game.board[i].isBonus);
                 
-                if (bonusExpand.length > 0 && Math.random() > 0.3) {
-                    // Deploy to bonus square
-                    const target = bonusExpand[0];
-                    const bonusArmies = game.board[target].isBonus ? game.board[target].armies : 0;
-                    game.board[target].owner = 2;
-                    game.board[target].armies = 1 + bonusArmies;
-                    game.board[target].isBonus = false;
+                // Deploy based on priorities
+                if (wizardGuards.length > 0 && Math.random() > 0.3) {
+                    // 70% chance to protect wizard
+                    const target = wizardGuards[Math.floor(Math.random() * wizardGuards.length)];
+                    game.board[target].armies++;
                     game.armiesToDeploy--;
-                } else if (expandOptions.length > 0 && Math.random() > 0.4) {
-                    // Deploy to adjacent empty
-                    const target = expandOptions[Math.floor(Math.random() * expandOptions.length)];
-                    const bonusArmies = game.board[target].isBonus ? game.board[target].armies : 0;
-                    game.board[target].owner = 2;
-                    game.board[target].armies = 1 + bonusArmies;
-                    game.board[target].isBonus = false;
-                    game.armiesToDeploy--;
-                } else {
-                    // Deploy to existing territory
-                    const borderTerritories = aiTerritories.filter(t => {
-                        const adjacentEnemies = getAdjacentCells(t.i).filter(adj => game.board[adj].owner === 1);
-                        return adjacentEnemies.length > 0;
-                    });
-                    
-                    const target = borderTerritories.length > 0
-                        ? borderTerritories[Math.floor(Math.random() * borderTerritories.length)]
-                        : aiTerritories[Math.floor(Math.random() * aiTerritories.length)];
-                    
+                } else if (threatenedTerritories.length > 0) {
+                    // Reinforce threatened territories
+                    const target = threatenedTerritories[0];
                     game.board[target.i].armies++;
                     game.armiesToDeploy--;
+                } else if (bonusExpand.length > 0 && Math.random() > 0.5) {
+                    // 50% chance to grab bonus
+                    const target = bonusExpand[0];
+                    const bonusArmies = game.board[target].armies;
+                    game.board[target].owner = 2;
+                    game.board[target].armies = 1 + bonusArmies;
+                    game.board[target].isBonus = false;
+                    game.armiesToDeploy--;
+                } else if (borderTerritories.length > 0) {
+                    // Reinforce border
+                    const target = borderTerritories[Math.floor(Math.random() * borderTerritories.length)];
+                    game.board[target.i].armies++;
+                    game.armiesToDeploy--;
+                } else if (aiTerritories.length > 0) {
+                    // Fallback
+                    const target = aiTerritories[Math.floor(Math.random() * aiTerritories.length)];
+                    game.board[target.i].armies++;
+                    game.armiesToDeploy--;
+                } else {
+                    break;
                 }
             }
             
@@ -1411,9 +1508,14 @@
         function aiExpand() {
             const aiTerritories = game.board
                 .map((c, i) => ({ i, c }))
-                .filter(x => x.c.owner === 2 && x.c.armies > 1);
+                .filter(x => x.c.owner === 2 && x.c.armies > 1 && !x.c.isWizard && !x.c.isArcher);
+            
+            let expansionsMade = 0;
+            const maxExpansions = 3; // Allow multiple expansions
             
             for (let territory of aiTerritories) {
+                if (expansionsMade >= maxExpansions) break;
+                
                 const adjacentEmpty = getAdjacentCells(territory.i)
                     .filter(adj => game.board[adj].owner === 0)
                     .map(adj => ({ i: adj, isBonus: game.board[adj].isBonus }));
@@ -1426,175 +1528,335 @@
                     const armiesToMove = Math.floor(game.board[territory.i].armies / 2);
                     if (armiesToMove >= 1) {
                         performExpansion(territory.i, target.i, armiesToMove);
+                        expansionsMade++;
                         renderBoard();
                         updateUI();
-                        break;
                     }
                 }
             }
         }
 
         function aiAttack() {
+            // Regular swordsmen attacks - SMART STRATEGY
             const aiTerritories = game.board
                 .map((c, i) => ({ i, c }))
-                .filter(x => x.c.owner === 2 && x.c.armies > 1);
+                .filter(x => x.c.owner === 2 && x.c.armies >= 2 && !x.c.isWizard && !x.c.isArcher);
             
             let attacksMade = 0;
-            const maxAttacks = 3;
+            const maxAttacks = 5;
             
+            // Evaluate all possible attacks and rank them
+            const attackOptions = [];
             for (let territory of aiTerritories) {
-                if (attacksMade >= maxAttacks) break;
-                
-                const adjacentEnemies = getAdjacentCells(territory.i)
+                const targets = getAdjacentCells(territory.i)
                     .filter(adj => game.board[adj].owner === 1)
-                    .map(adj => ({ i: adj, armies: game.board[adj].armies }));
+                    .map(adj => ({
+                        from: territory.i,
+                        to: adj,
+                        attackerArmies: game.board[territory.i].armies,
+                        defenderArmies: game.board[adj].armies,
+                        advantage: game.board[territory.i].armies - game.board[adj].armies,
+                        isWizard: game.board[adj].isWizard,
+                        isArcher: game.board[adj].isArcher
+                    }));
                 
-                // Attack if we have more armies (will win)
-                const winnable = adjacentEnemies.filter(e => 
-                    game.board[territory.i].armies > e.armies
-                );
+                attackOptions.push(...targets);
+            }
+            
+            // Prioritize: wizards > archers > weak targets > favorable matchups
+            attackOptions.sort((a, b) => {
+                // Prioritize killing player's wizard or archer
+                if (a.isWizard && !b.isWizard) return -1;
+                if (!a.isWizard && b.isWizard) return 1;
+                if (a.isArcher && !b.isArcher) return -1;
+                if (!a.isArcher && b.isArcher) return 1;
                 
-                if (winnable.length > 0) {
-                    const target = winnable.sort((a, b) => a.armies - b.armies)[0];
-                    performAttack(territory.i, target.i);
-                    attacksMade++;
-                    renderBoard();
-                    updateUI();
-                    
-                    if (!game.gameOver) {
-                        checkWinCondition();
+                // Then by advantage (higher advantage = better)
+                return b.advantage - a.advantage;
+            });
+            
+            // Only attack if we have advantage of at least 1 (or targeting wizard/archer)
+            const goodAttacks = attackOptions.filter(opt => 
+                opt.advantage >= 1 || opt.isWizard || opt.isArcher
+            );
+            
+            for (let attack of goodAttacks) {
+                if (attacksMade >= maxAttacks || game.gameOver) break;
+                
+                performAttack(attack.from, attack.to);
+                attacksMade++;
+                renderBoard();
+                updateUI();
+                checkWinCondition();
+            }
+            
+            // AI wizard attacks - prioritize player's wizards and archers
+            // Only allow ONE wizard attack per turn
+            const wizards = game.board
+                .map((c, i) => c.owner === 2 && c.isWizard ? i : -1)
+                .filter(i => i !== -1);
+            
+            // Only attack with the first wizard (one attack per turn)
+            if (wizards.length > 0 && !game.gameOver) {
+                const wiz = wizards[0]; // Use only first wizard
+                
+                const targets = [];
+                for (let j = 0; j < BOARD_SIZE; j++) {
+                    if (game.board[j].owner === 1 && isWithinWizardRange(wiz, j)) {
+                        targets.push({
+                            i: j,
+                            armies: game.board[j].armies,
+                            isWizard: game.board[j].isWizard,
+                            isArcher: game.board[j].isArcher,
+                            priority: game.board[j].isWizard ? 1000 : 
+                                     game.board[j].isArcher ? 500 : 
+                                     game.board[j].armies
+                        });
                     }
-                    if (game.gameOver) break;
+                }
+                
+                if (targets.length > 0) {
+                    // Attack highest priority target
+                    targets.sort((a, b) => b.priority - a.priority);
+                    performWizardAttack(wiz, targets[0].i);
                 }
             }
         }
 
+        function aiArcherPhase() {
+            const archers = game.board.map((c, i) => c.owner === 2 && c.isArcher ? i : -1).filter(i => i !== -1);
+            
+            archers.forEach(archer => {
+                for (let j = 0; j < BOARD_SIZE; j++) {
+                    if (game.board[j].owner === 1 && isWithinArcherRange(archer, j)) {
+                        performArcherAttack(archer, j);
+                        break;
+                    }
+                }
+            });
+        }
+
         function aiFortify() {
-            // AI fortifies by moving armies from interior to border territories
-            const aiTerritories = game.board
-                .map((c, i) => ({ i, c }))
-                .filter(x => x.c.owner === 2 && x.c.armies > 2);
+            // PRIORITY 1: Protect wizards - fortify territories adjacent to wizards
+            const wizardPositions = game.board
+                .map((c, i) => c.owner === 2 && c.isWizard ? i : -1)
+                .filter(i => i !== -1);
+            
+            for (let wiz of wizardPositions) {
+                const adjacentFriendly = getAdjacentCells(wiz).filter(adj => 
+                    game.board[adj].owner === 2 && 
+                    !game.board[adj].isWizard && 
+                    !game.board[adj].isArcher
+                );
+                
+                // Find weak wizard guards that need reinforcement
+                const weakGuards = adjacentFriendly.filter(adj => game.board[adj].armies < 4);
+                
+                if (weakGuards.length > 0) {
+                    // Find interior territories with extra troops
+                    const interiorTerritories = game.board
+                        .map((c, i) => ({ i, c }))
+                        .filter(x => x.c.owner === 2 && x.c.armies > 3 && !x.c.isWizard && !x.c.isArcher)
+                        .filter(t => {
+                            const adj = getAdjacentCells(t.i);
+                            return !adj.some(a => game.board[a].owner === 1);
+                        });
+                    
+                    for (let interior of interiorTerritories) {
+                        const adjacentToInterior = getAdjacentCells(interior.i);
+                        const wizardGuards = adjacentToInterior.filter(adj => weakGuards.includes(adj));
+                        
+                        if (wizardGuards.length > 0) {
+                            const move = Math.floor(game.board[interior.i].armies / 2);
+                            if (move >= 2) {
+                                performFortify(interior.i, wizardGuards[0], move);
+                                renderBoard();
+                                return;
+                            }
+                        }
+                    }
+                }
+            }
+            
+            // PRIORITY 2: Reinforce frontline from safe interior
+            const aiTerritories = game.board.map((c, i) => ({ i, c })).filter(x => x.c.owner === 2 && x.c.armies > 2 && !x.c.isWizard && !x.c.isArcher);
             
             for (let territory of aiTerritories) {
-                const adjacentCells = getAdjacentCells(territory.i);
-                const hasEnemyNeighbor = adjacentCells.some(adj => game.board[adj].owner === 1);
-                
-                // If this territory has no enemies nearby, it's interior
-                if (!hasEnemyNeighbor) {
-                    // Find adjacent friendly territories that DO have enemies
-                    const borderFriendlies = adjacentCells.filter(adj => {
+                const hasEnemyNear = getAdjacentCells(territory.i).some(adj => game.board[adj].owner === 1);
+                if (!hasEnemyNear) {
+                    const borders = getAdjacentCells(territory.i).filter(adj => {
                         if (game.board[adj].owner !== 2) return false;
-                        const adjNeighbors = getAdjacentCells(adj);
-                        return adjNeighbors.some(n => game.board[n].owner === 1);
+                        return getAdjacentCells(adj).some(n => game.board[n].owner === 1);
                     });
                     
-                    if (borderFriendlies.length > 0) {
-                        // Move half the armies to the border
-                        const target = borderFriendlies[0];
-                        const armiesToMove = Math.floor(game.board[territory.i].armies / 2);
-                        if (armiesToMove >= 1) {
-                            performFortify(territory.i, target, armiesToMove);
+                    if (borders.length > 0) {
+                        const move = Math.floor(game.board[territory.i].armies * 0.6);
+                        if (move >= 2) {
+                            performFortify(territory.i, borders[0], move);
                             renderBoard();
-                            updateUI();
-                            break; // Only fortify once per turn
+                            break;
                         }
                     }
                 }
             }
         }
 
+        function checkWinCondition() {
+            const p1Armies = game.board.filter(c => c.owner === 1).reduce((sum, c) => sum + c.armies, 0);
+            const p2Armies = game.board.filter(c => c.owner === 2).reduce((sum, c) => sum + c.armies, 0);
+            
+            const player2Name = game.is2Player ? 'Player 2' : 'AI';
+            
+            if (p1Armies === 0) {
+                if (game.isCampaign) {
+                    showStatus('💀 Defeat! AI wins!');
+                } else {
+                    showStatus(`🎉 ${player2Name} WINS! Player 1 eliminated! 🎉`);
+                }
+                game.gameOver = true;
+            } else if (p2Armies === 0) {
+                if (game.isCampaign && game.currentStage < 20) {
+                    showStatus(`🎉 Stage ${game.currentStage} complete!`);
+                    game.gameOver = true;
+                    setTimeout(() => nextStage(), 2000);
+                } else if (game.isCampaign && game.currentStage === 20) {
+                    showStatus('🏆 CAMPAIGN COMPLETE! YOU WIN! 🏆');
+                    game.gameOver = true;
+                } else {
+                    showStatus(`🎉 Player 1 WINS! ${player2Name} eliminated! 🎉`);
+                    game.gameOver = true;
+                }
+            }
+            updateUI();
+        }
+
+        function performExpansion(from, to, armies) {
+            const bonus = game.board[to].isBonus ? game.board[to].armies : 0;
+            game.board[from].armies -= armies;
+            game.board[to].owner = game.currentPlayer;
+            game.board[to].armies = armies + bonus;
+            game.board[to].isBonus = false;
+            
+            if (bonus > 0) celebrateBonus();
+        }
+
+        function performFortify(from, to, armies) {
+            game.board[from].armies -= armies;
+            game.board[to].armies += armies;
+        }
+
+        function showMoveModal(from, to, action) {
+            const max = game.board[from].armies - 1;
+            game.pendingMove = { from, to, action };
+            
+            const slider = document.getElementById('army-slider');
+            slider.max = max;
+            slider.value = Math.min(max, slider.value);
+            
+            document.getElementById('move-description').textContent = 
+                action === 'expand' ? 'Expanding territory' : 'Moving armies';
+            
+            updateSliderDisplay();
+            document.getElementById('move-modal').classList.add('show');
+        }
+
+        function hideModal() {
+            document.getElementById('move-modal').classList.remove('show');
+            game.pendingMove = null;
+        }
+
+        function updateSliderDisplay() {
+            const slider = document.getElementById('army-slider');
+            const moving = parseInt(slider.value);
+            const leaving = game.board[game.pendingMove.from].armies - moving;
+            
+            document.getElementById('slider-value').textContent = moving;
+            document.getElementById('moving-armies').textContent = moving;
+            document.getElementById('leaving-armies').textContent = leaving;
+        }
+
+        function confirmMove() {
+            if (!game.pendingMove) return;
+            
+            const { from, to, action } = game.pendingMove;
+            const armies = parseInt(document.getElementById('army-slider').value);
+            
+            if (action === 'expand') {
+                performExpansion(from, to, armies);
+            } else {
+                performFortify(from, to, armies);
+            }
+            
+            hideModal();
+            game.selectedCell = null;
+            renderBoard();
+            updateUI();
+            checkWinCondition();
+        }
+
+        function cancelMove() {
+            hideModal();
+        }
+
+        function getReinforcementCount(player) {
+            const territories = game.board.filter(c => c.owner === player).length;
+            return Math.max(3, Math.floor(territories / 3));
+        }
+
+        function isAdjacent(i, j) {
+            const row1 = Math.floor(i / 8);
+            const col1 = i % 8;
+            const row2 = Math.floor(j / 8);
+            const col2 = j % 8;
+            
+            return (Math.abs(row1 - row2) === 1 && col1 === col2) ||
+                   (Math.abs(col1 - col2) === 1 && row1 === row2);
+        }
+
+        function isAdjacentToPlayer(i, player) {
+            return getAdjacentCells(i).some(adj => game.board[adj].owner === player);
+        }
+
         function getAdjacentCells(i) {
             const adjacent = [];
-            const row = Math.floor(i / 6);
-            const col = i % 6;
+            const row = Math.floor(i / 8);
+            const col = i % 8;
             
-            if (row > 0) adjacent.push(i - 6);
-            if (row < 5) adjacent.push(i + 6);
+            if (row > 0) adjacent.push(i - 8);
+            if (row < 5) adjacent.push(i + 8);
             if (col > 0) adjacent.push(i - 1);
-            if (col < 5) adjacent.push(i + 1);
+            if (col < 7) adjacent.push(i + 1);
             
             return adjacent;
         }
 
-        function checkWinCondition() {
-            const p1Territories = game.board.filter(c => c.owner === 1).length;
-            const p2Territories = game.board.filter(c => c.owner === 2).length;
-            const p1Armies = game.board.filter(c => c.owner === 1).reduce((sum, c) => sum + c.armies, 0);
-            const p2Armies = game.board.filter(c => c.owner === 2).reduce((sum, c) => sum + c.armies, 0);
-            
-            // Check if either player has no armies left
-            if (p1Armies === 0 || p1Territories === 0) {
-                showStatus('🎉 Player 2 WINS - Player 1 eliminated! 🎉');
-                game.gameOver = true;
-            } else if (p2Armies === 0 || p2Territories === 0) {
-                showStatus('🎉 Player 1 WINS - Player 2 eliminated! 🎉');
-                game.gameOver = true;
-            } else if (game.turnCount >= game.maxTurns * 2) {
-                // Turn limit reached - count territories
-                if (p1Territories > p2Territories) {
-                    showStatus(`🎉 Player 1 WINS with ${p1Territories} territories! 🎉`);
-                } else if (p2Territories > p1Territories) {
-                    showStatus(`🎉 Player 2 WINS with ${p2Territories} territories! 🎉`);
-                } else {
-                    showStatus('🤝 DRAW! Both players control equal territories! 🤝');
-                }
-                game.gameOver = true;
-            }
-            
-            updateUI();
-        }
-
         function updateUI() {
-            const p1Territories = game.board.filter(c => c.owner === 1).length;
-            const p2Territories = game.board.filter(c => c.owner === 2).length;
-            const p1Armies = game.board.filter(c => c.owner === 1).reduce((sum, c) => sum + c.armies, 0);
-            const p2Armies = game.board.filter(c => c.owner === 2).reduce((sum, c) => sum + c.armies, 0);
+            const p1T = game.board.filter(c => c.owner === 1).length;
+            const p2T = game.board.filter(c => c.owner === 2).length;
+            const p1A = game.board.filter(c => c.owner === 1).reduce((sum, c) => sum + c.armies, 0);
+            const p2A = game.board.filter(c => c.owner === 2).reduce((sum, c) => sum + c.armies, 0);
             
-            document.getElementById('p1-territories').textContent = p1Territories;
-            document.getElementById('p2-territories').textContent = p2Territories;
-            document.getElementById('p1-armies').textContent = p1Armies;
-            document.getElementById('p2-armies').textContent = p2Armies;
+            document.getElementById('p1-territories').textContent = p1T;
+            document.getElementById('p2-territories').textContent = p2T;
+            document.getElementById('p1-armies').textContent = p1A;
+            document.getElementById('p2-armies').textContent = p2A;
             
-            document.getElementById('p1-card').classList.toggle('active', game.currentPlayer === 1 && !game.gameOver);
-            document.getElementById('p2-card').classList.toggle('active', game.currentPlayer === 2 && !game.gameOver);
+            document.getElementById('p1-card').classList.toggle('active', game.currentPlayer === 1);
+            document.getElementById('p2-card').classList.toggle('active', game.currentPlayer === 2);
             
             const endBtn = document.getElementById('end-btn');
-            endBtn.disabled = !game.gameMode || game.gameOver || (game.phase === 'deploy' && game.armiesToDeploy > 0);
+            endBtn.disabled = game.gameOver || (game.phase === 'deploy' && game.armiesToDeploy > 0);
+            endBtn.textContent = game.phase === 'fortify' ? 'End Turn' : 'Next Phase';
             
-            // Update button text based on phase
-            if (game.phase === 'fortify') {
-                endBtn.textContent = 'End Turn';
-            } else {
-                endBtn.textContent = 'Next Phase';
-            }
-            
-            if (!game.gameOver && game.gameMode) {
-                if (game.phase === 'wizard_move') {
-                    showStatus(`Player ${game.currentPlayer}: Move your wizard (${game.wizardMovesRemaining} moves remaining)`);
-                    document.getElementById('phase-indicator').textContent = '🔮 WIZARD MOVEMENT';
-                    document.getElementById('phase-indicator').style.background = '#fef3c7';
-                    document.getElementById('phase-indicator').style.color = '#92400e';
-                } else if (game.phase === 'deploy') {
-                    showStatus(`Player ${game.currentPlayer}: Deploy ${game.armiesToDeploy} armies to your territories or adjacent empty squares`);
-                    document.getElementById('phase-indicator').textContent = 'Current Phase: 1️⃣ DEPLOY';
-                    document.getElementById('phase-indicator').style.background = '#dbeafe';
-                    document.getElementById('phase-indicator').style.color = '#1e40af';
-                } else if (game.phase === 'expand') {
-                    showStatus(`Player ${game.currentPlayer}: Expand to adjacent empty squares (optional - click Next Phase to skip)`);
-                    document.getElementById('phase-indicator').textContent = 'Current Phase: 2️⃣ EXPAND';
-                    document.getElementById('phase-indicator').style.background = '#d1fae5';
-                    document.getElementById('phase-indicator').style.color = '#065f46';
-                } else if (game.phase === 'attack') {
-                    showStatus(`Player ${game.currentPlayer}: Attack adjacent enemies (optional - click Next Phase to skip)`);
-                    document.getElementById('phase-indicator').textContent = 'Current Phase: 3️⃣ ATTACK';
-                    document.getElementById('phase-indicator').style.background = '#fee2e2';
-                    document.getElementById('phase-indicator').style.color = '#991b1b';
-                } else if (game.phase === 'fortify') {
-                    showStatus(`Player ${game.currentPlayer}: Move armies between your territories (optional - click End Turn to finish)`);
-                    document.getElementById('phase-indicator').textContent = 'Current Phase: 4️⃣ FORTIFY';
-                    document.getElementById('phase-indicator').style.background = '#e9d5ff';
-                    document.getElementById('phase-indicator').style.color = '#6b21a8';
-                }
+            if (!game.gameOver) {
+                const phaseNames = {
+                    wizard_move: '🔮 WIZARD MOVEMENT',
+                    deploy: '1️⃣ DEPLOY',
+                    expand: '2️⃣ EXPAND',
+                    attack: '3️⃣ ATTACK',
+                    fortify: '4️⃣ FORTIFY'
+                };
+                document.getElementById('phase-indicator').textContent = phaseNames[game.phase] || game.phase;
             }
         }
 
@@ -1602,7 +1864,250 @@
             document.getElementById('status').textContent = msg;
         }
 
-        init();
+        function celebrateBonus() {
+            playBonusSound();
+            createFireworks();
+        }
+
+        function playBonusSound() {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            [523.25, 659.25, 783.99, 1046.50].forEach((freq, i) => {
+                setTimeout(() => {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.frequency.value = freq;
+                    gain.gain.setValueAtTime(0.3, ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5);
+                    osc.start(ctx.currentTime);
+                    osc.stop(ctx.currentTime + 0.5);
+                }, i * 100);
+            });
+        }
+
+        function playWizardSound() {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.frequency.setValueAtTime(800, ctx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(200, ctx.currentTime + 0.5);
+            gain.gain.setValueAtTime(0.3, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5);
+            osc.start(ctx.currentTime);
+            osc.stop(ctx.currentTime + 0.5);
+        }
+
+        function playArcherSound() {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.frequency.setValueAtTime(600, ctx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(1200, ctx.currentTime + 0.2);
+            gain.gain.setValueAtTime(0.3, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.2);
+            osc.start(ctx.currentTime);
+            osc.stop(ctx.currentTime + 0.2);
+        }
+
+        function playTrapDoorSound() {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.frequency.setValueAtTime(600, ctx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(50, ctx.currentTime + 0.8);
+            osc.type = 'sawtooth';
+            gain.gain.setValueAtTime(0.4, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.8);
+            osc.start(ctx.currentTime);
+            osc.stop(ctx.currentTime + 0.8);
+        }
+
+        function createFireworks() {
+            const container = document.querySelector('.container');
+            const colors = ['#FFD700', '#FF6B6B', '#4ECDC4'];
+            
+            for (let burst = 0; burst < 2; burst++) {
+                setTimeout(() => {
+                    for (let i = 0; i < 20; i++) {
+                        const particle = document.createElement('div');
+                        particle.style.position = 'absolute';
+                        particle.style.width = '6px';
+                        particle.style.height = '6px';
+                        particle.style.borderRadius = '50%';
+                        particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                        particle.style.left = '50%';
+                        particle.style.top = '100px';
+                        particle.style.pointerEvents = 'none';
+                        particle.style.zIndex = '1000';
+                        
+                        container.style.position = 'relative';
+                        container.appendChild(particle);
+                        
+                        const angle = (Math.PI * 2 * i) / 20;
+                        const velocity = 50 + Math.random() * 50;
+                        let x = 0, y = 0, life = 1;
+                        
+                        function animate() {
+                            x += Math.cos(angle) * velocity * 0.016;
+                            y += Math.sin(angle) * velocity * 0.016;
+                            life -= 0.02;
+                            particle.style.transform = `translate(${x}px, ${y}px)`;
+                            particle.style.opacity = life;
+                            if (life > 0) requestAnimationFrame(animate);
+                            else particle.remove();
+                        }
+                        animate();
+                    }
+                }, burst * 300);
+            }
+        }
+
+        function animateMagicBall(from, to, color, onComplete) {
+            const board = document.getElementById('board');
+            const cells = board.querySelectorAll('.cell');
+            const fromRect = cells[from].getBoundingClientRect();
+            const toRect = cells[to].getBoundingClientRect();
+            
+            const ball = document.createElement('div');
+            ball.style.position = 'fixed';
+            ball.style.width = '40px';
+            ball.style.height = '40px';
+            ball.style.borderRadius = '50%';
+            ball.style.background = color === 'blue' ? 
+                'radial-gradient(circle, #60a5fa, #3b82f6)' : 
+                'radial-gradient(circle, #f87171, #ef4444)';
+            ball.style.boxShadow = `0 0 30px ${color === 'blue' ? '#60a5fa' : '#f87171'}`;
+            ball.style.left = (fromRect.left + fromRect.width / 2 - 20) + 'px';
+            ball.style.top = (fromRect.top + fromRect.height / 2 - 20) + 'px';
+            ball.style.zIndex = '99999';
+            ball.style.pointerEvents = 'none';
+            
+            document.body.appendChild(ball);
+            
+            const startX = fromRect.left + fromRect.width / 2 - 20;
+            const startY = fromRect.top + fromRect.height / 2 - 20;
+            const endX = toRect.left + toRect.width / 2 - 20;
+            const endY = toRect.top + toRect.height / 2 - 20;
+            
+            let progress = 0;
+            function animate() {
+                progress += 0.05;
+                const x = startX + (endX - startX) * progress;
+                const y = startY + (endY - startY) * progress;
+                ball.style.left = x + 'px';
+                ball.style.top = y + 'px';
+                
+                if (progress < 1) {
+                    requestAnimationFrame(animate);
+                } else {
+                    ball.style.transform = 'scale(2)';
+                    ball.style.opacity = '0';
+                    setTimeout(() => {
+                        ball.remove();
+                        onComplete();
+                    }, 200);
+                }
+            }
+            animate();
+        }
+
+        function animateArrow(from, to, onComplete) {
+            const board = document.getElementById('board');
+            const cells = board.querySelectorAll('.cell');
+            const fromRect = cells[from].getBoundingClientRect();
+            const toRect = cells[to].getBoundingClientRect();
+            
+            const arrow = document.createElement('div');
+            arrow.style.position = 'fixed';
+            arrow.style.width = '30px';
+            arrow.style.height = '4px';
+            arrow.style.background = '#8B4513';
+            arrow.style.left = (fromRect.left + fromRect.width / 2) + 'px';
+            arrow.style.top = (fromRect.top + fromRect.height / 2) + 'px';
+            arrow.style.zIndex = '99999';
+            arrow.style.pointerEvents = 'none';
+            arrow.innerHTML = '<div style="position: absolute; right: -8px; top: -6px; width: 0; height: 0; border-left: 8px solid #8B4513; border-top: 7px solid transparent; border-bottom: 7px solid transparent;"></div>';
+            
+            document.body.appendChild(arrow);
+            
+            const startX = fromRect.left + fromRect.width / 2;
+            const startY = fromRect.top + fromRect.height / 2;
+            const endX = toRect.left + toRect.width / 2;
+            const endY = toRect.top + toRect.height / 2;
+            
+            const angle = Math.atan2(endY - startY, endX - startX);
+            arrow.style.transform = `rotate(${angle}rad)`;
+            
+            let progress = 0;
+            function animate() {
+                progress += 0.08;
+                const x = startX + (endX - startX) * progress;
+                const y = startY + (endY - startY) * progress;
+                arrow.style.left = x + 'px';
+                arrow.style.top = y + 'px';
+                
+                if (progress < 1) {
+                    requestAnimationFrame(animate);
+                } else {
+                    arrow.style.opacity = '0';
+                    setTimeout(() => {
+                        arrow.remove();
+                        onComplete();
+                    }, 100);
+                }
+            }
+            animate();
+        }
+
+        function toggleInstructions() {
+            const panel = document.getElementById('instructions-panel');
+            if (panel.style.display === 'none') {
+                panel.style.display = 'block';
+            } else {
+                panel.style.display = 'none';
+            }
+        }
+
+        function showCutscene(stage) {
+            const modal = document.getElementById('cutscene-modal');
+            const video = document.getElementById('cutscene-video');
+            document.getElementById('cutscene-stage').textContent = stage;
+            
+            // Reset video to start
+            video.currentTime = 0;
+            video.load();
+            
+            // Show modal
+            modal.classList.add('show');
+            
+            // Auto-close when video ends
+            video.onended = function() {
+                skipCutscene();
+            };
+        }
+
+        function skipCutscene() {
+            const modal = document.getElementById('cutscene-modal');
+            const video = document.getElementById('cutscene-video');
+            
+            // Pause video
+            video.pause();
+            
+            // Hide modal
+            modal.classList.remove('show');
+            
+            // Show status message
+            showStatus(`Stage ${game.currentStage} - Player 1's turn! Move your wizard.`);
+        }
+
+        initStage();
     </script>
 </body>
-  </html>
+</html>
